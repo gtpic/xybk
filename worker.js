@@ -170,7 +170,7 @@ async function handleRequest({ request, env, ctx }) {
                         if (item.name === 'category[]') article[item.name].push(item.value);
                         else article[item.name] = item.value;
                     });
-                    const id = Date.now().toString();
+					const id = Date.now().toString(36) + Math.random().toString(36).substring(2, 6);
                     const contentText = (article.content || "").replace(/<[^>]+>/g, "").substring(0, 180);
                     const firstImg = article.img || getFirstImageUrl(article.content) || `${cdn}/${theme}/files/noimage.jpg`;
 
