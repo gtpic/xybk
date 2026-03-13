@@ -300,7 +300,7 @@ async function handleRequest({ request, env, ctx }) {
 						const { results } = await env.db.prepare("SELECT * FROM images ORDER BY upload_date DESC LIMIT 100").all();
 						return new Response(JSON.stringify(results || []), { status: 200, headers: { 'Content-Type': 'application/json' } });
 					} catch (e) {
-						return new Response(JSON.stringify([]), { status: 200, headers: { 'Content-Type': 'application/json' } });
+						return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
 					}
 				}
 				else if (pathname.startsWith('/admin/api/images/') && request.method === 'DELETE') {
