@@ -368,7 +368,14 @@
 						</div>
 						<div class="form-group">
 							<label for="logo">Logo图片地址 (可选)</label>
-							<input type="url" class="form-control" id="logo" name="logo" placeholder="https://example.com/logo.png">
+							<div class="input-group">
+								<input type="url" class="form-control" id="logo" name="logo" placeholder="https://example.com/logo.png">
+								<span class="input-group-addon">页头显示</span>
+								<select class="form-control" id="showLogoInHeader" name="showLogoInHeader">
+									<option value="true" {{#showLogoInHeader_true}}selected{{/showLogoInHeader_true}}>显示</option>
+									<option value="false" {{#showLogoInHeader_false}}selected{{/showLogoInHeader_false}}>隐藏</option>
+								</select>
+							</div>
 						</div>
 						<div class="form-group">
 							<label for="site_description">网站描述</label>
@@ -980,6 +987,7 @@ tinymce.init({
 			
 			$('#siteName').val(`{{& OPT.siteName }}`);
 			$('#logo').val(`{{& OPT.logo }}`);
+			$('#showLogoInHeader').val(`{{ OPT.showLogoInHeader }}` === 'false' ? 'false' : 'true');
 			$('#site_description').val(`{{& site_description }}`);
 			$('#site_keywords').val(`{{& site_keywords }}`);
 			$('#site_footer_copyright').val(`{{& site_footer_copyright }}`);
@@ -1582,6 +1590,7 @@ function handleLinkInput(input) {
 		var configData = [
 			{ name: 'siteName', value: $('#siteName').val() },
 			{ name: 'logo', value: $('#logo').val() },
+			{ name: 'showLogoInHeader', value: $('#showLogoInHeader').val() },
 			{ name: 'site_description', value: $('#site_description').val() },
 			{ name: 'site_keywords', value: $('#site_keywords').val() },
 			{ name: 'site_footer_copyright', value: $('#site_footer_copyright').val() },
