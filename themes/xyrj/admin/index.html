@@ -439,19 +439,14 @@
 							<input type="text" class="form-control" id="marqueeSpeed" name="marqueeSpeed" placeholder="例如: 15s (默认) 或 30s (更慢)">
 						</div>
 						<div class="form-group" style="display: flex; align-items: center; margin-top: -10px;">
-							<label style="margin-right: 15px;">在以下页面显示走马灯:</label>
-							<div class="checkbox" style="margin-right: 15px;">
-								<label>
-									<input type="checkbox" id="showMarqueeOnIndex" name="showMarqueeOnIndex"> 首页/分类页
-								</label>
-							</div>
-							<div class="checkbox">
-								<label>
-									<input type="checkbox" id="showMarqueeOnArticle" name="showMarqueeOnArticle"> 文章页
-								</label>
-							</div>
+							<label style="margin-right: 15px; margin-bottom: 0;">在以下页面显示走马灯:</label>
+							<label class="checkbox-inline" style="margin-right: 15px;">
+								<input type="checkbox" id="showMarqueeOnIndex" name="showMarqueeOnIndex"> 首页/分类页
+							</label>
+							<label class="checkbox-inline">
+								<input type="checkbox" id="showMarqueeOnArticle" name="showMarqueeOnArticle"> 文章页
+							</label>
 						</div>
-						
 						<a tabindex="0" role="button" type="button" class="btn btn-primary" onclick="saveSiteSettings()">
 							<i class="fas fa-save"></i> 保存功能设置
 						</a>
