@@ -19,12 +19,16 @@
 	<script src="{{ &OPT.theme_github_path }}xyrj/admin/files/defaults-zh_CN.min.js"></script>
 	<script src="{{ &OPT.theme_github_path }}xyrj/admin/files/Sortable.min.js"></script>
 	<style>
+		html, body {
+			overflow-y: scroll; 
+			scrollbar-gutter: stable; 
+		}
 		.pagination-controls {
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
 			padding: 15px 0;
-			flex-wrap: wrap; /* 确保在小屏幕上换行 */
+			flex-wrap: wrap; 
 		}
 		.pagination-controls .page-size-selector {
 			margin-right: 15px;
@@ -61,7 +65,7 @@
 		}
 		/* --- START: Sortable.js 拖动样式 --- */
 		.sortable-handle {
-			cursor: move; /* 鼠标手势改为“移动” */
+			cursor: move; 
 			padding-right: 8px;
 			padding-left: 5px;
 			color: #999;
