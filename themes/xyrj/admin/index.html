@@ -83,22 +83,22 @@
 			padding-top: 2px;
 			padding-bottom: 2px;
 		}
-		/* --- START: 图片管理样式 --- */
-		.image-grid { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 15px; }
+		/* --- START: 图片管理画廊样式 --- */
 		.image-card {
-			width: calc(20% - 12px); border: 1px solid #eee; border-radius: 6px; 
-			padding: 10px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.04);
-			transition: transform 0.2s; display: flex; flex-direction: column; justify-content: space-between;
+			border: 1px solid #ddd; border-radius: 4px; padding: 8px; margin: 10px;
+			width: calc(20% - 20px); background-color: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+			display: flex; flex-direction: column; justify-content: space-between;
 		}
-		.image-card:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-		.image-card img { width: 100%; height: 120px; object-fit: cover; border-radius: 4px; margin-bottom: 10px; border: 1px solid #f9f9f9; }
-		.image-card .image-info { font-size: 12px; color: #666; word-break: break-all; margin-bottom: 10px; line-height: 1.5; }
-		.image-card .btn-group-sm { display: flex; justify-content: space-between; gap: 5px; }
-		.image-card .btn-group-sm .btn { flex: 1; padding: 4px 8px; font-size: 12px; }
-		@media (max-width: 1200px) { .image-card { width: calc(25% - 12px); } }
-		@media (max-width: 992px) { .image-card { width: calc(33.33% - 12px); } }
-		@media (max-width: 576px) { .image-card { width: calc(50% - 12px); } }
-		/* --- END: 图片管理样式 --- */
+		@media (max-width: 992px) { .image-card { width: calc(25% - 20px); } }
+		@media (max-width: 768px) { .image-card { width: calc(33.33% - 20px); } }
+		@media (max-width: 576px) { .image-card { width: calc(50% - 20px); } }
+		.image-card img {
+			max-width: 100%; height: 140px; object-fit: cover; border-radius: 4px;
+			margin-bottom: 10px; border: 1px solid #f0f0f0;
+		}
+		.image-card .image-info { font-size: 12px; color: #777; word-break: break-all; margin-bottom: 10px; line-height: 1.4; }
+		.image-card .btn-group-sm { display: flex; justify-content: space-between; }
+		/* --- END: 图片管理画廊样式 --- */
 		/* --- END: Sortable.js 拖动样式 --- */
 	</style>
 </head>
@@ -512,50 +512,43 @@
 						<div id="image-upload-tab" class="tab-pane fade in active">
 							<div class="panel panel-default">
 								<div class="panel-body">
-									<div style="display: flex; gap: 10px; align-items: center; background: #f9f9f9; padding: 15px; border-radius: 4px; border: 1px solid #eee;">
-										<input type="file" id="imageFileInput" accept="image/*" class="form-control" style="max-width: 300px;">
+									<div class="form-group" style="display: flex; gap: 10px; margin-bottom: 20px;">
+										<input type="file" id="imageFileInput" accept="image/*" class="form-control" style="width: auto; flex-grow: 1;">
 										<button class="btn btn-primary" id="btn-upload-image" onclick="uploadImage()"><i class="fas fa-upload"></i> 上传图片</button>
-										<span style="color: #888; font-size: 13px; margin-left: 10px;"><i class="fas fa-info-circle"></i> 上传的图片将自动保存至【图片储存设置】中生效的节点</span>
 									</div>
-									<div class="image-grid" id="image-gallery-list">
+									<div class="row" id="image-gallery-list" style="display: flex; flex-wrap: wrap; background: #f9f9f9; padding: 10px; border-radius: 4px; min-height: 200px;">
 										</div>
 								</div>
 							</div>
 						</div>
 						<div id="image-storage-tab" class="tab-pane fade">
 							<form id="imageStorageForm" role="form">
-								<div class="form-group" style="background: #eef7fd; padding: 15px; border-radius: 4px; border: 1px solid #d4e8fa;">
-									<label style="color: #31708f;"><i class="fas fa-server"></i> 当前生效的存储节点 (全局)</label>
-									<select class="form-control" id="active_storage_node" style="max-width: 300px;">
-										<option value="r2">Cloudflare R2 桶</option>
-										<option value="tg">Telegram 私有频道</option>
-										<option value="github">GitHub 仓库</option>
-										<option value="qiniu">七牛云</option>
+								<div class="form-group">
+									<label>当前生效的存储节点</label>
+									<select class="form-control" id="active_storage_node" name="active_storage_node">
+										<option value="r2">Cloudflare R2 桶</option><option value="tg">Telegram 私有频道</option>
+										<option value="github">GitHub 仓库</option><option value="qiniu">七牛云</option>
 									</select>
 								</div>
-								<div class="row">
-									<div class="col-md-6"><div class="panel panel-default"><div class="panel-heading"><b>Cloudflare R2 设置</b></div><div class="panel-body">
-										<div class="form-group"><label>Bucket 名称</label><input type="text" class="form-control" id="r2_bucket" placeholder="例如: my-images"></div>
-										<div class="form-group"><label>自定义域名 (必填，需带http/https)</label><input type="url" class="form-control" id="r2_domain" placeholder="https://img.example.com"></div>
-									</div></div></div>
-									<div class="col-md-6"><div class="panel panel-default"><div class="panel-heading"><b>Telegram 私有频道设置</b></div><div class="panel-body">
-										<div class="form-group"><label>Bot Token</label><input type="password" class="form-control" id="tg_bot_token" placeholder="BotFather 提供的 Token"></div>
-										<div class="form-group"><label>Chat ID</label><input type="text" class="form-control" id="tg_chat_id" placeholder="例如: -100123456789"></div>
-									</div></div></div>
-								</div>
-								<div class="row">
-									<div class="col-md-6"><div class="panel panel-default"><div class="panel-heading"><b>GitHub 存储设置</b></div><div class="panel-body">
-										<div class="form-group"><label>Personal Access Token</label><input type="password" class="form-control" id="gh_token" placeholder="ghp_xxxxxx"></div>
-										<div class="form-group"><label>仓库地址 (Repo)</label><input type="text" class="form-control" id="gh_repo" placeholder="格式: user/repo"></div>
-									</div></div></div>
-									<div class="col-md-6"><div class="panel panel-default"><div class="panel-heading"><b>七牛云设置</b></div><div class="panel-body">
-										<div class="form-group"><label>Access Key (AK)</label><input type="text" class="form-control" id="qiniu_ak"></div>
-										<div class="form-group"><label>Secret Key (SK)</label><input type="password" class="form-control" id="qiniu_sk"></div>
-										<div class="form-group"><label>Bucket 空间名</label><input type="text" class="form-control" id="qiniu_bucket"></div>
-										<div class="form-group"><label>绑定域名</label><input type="url" class="form-control" id="qiniu_domain" placeholder="http://xxxx.clouddn.com"></div>
-									</div></div></div>
-								</div>
-								<a tabindex="0" role="button" type="button" class="btn btn-primary" onclick="saveImageStorageSettings()"><i class="fas fa-save"></i> 保存存储设置</a>
+								<div class="panel panel-info"><div class="panel-heading">Cloudflare R2 设置</div><div class="panel-body">
+									<div class="form-group"><label>Bucket 名称</label><input type="text" class="form-control" id="r2_bucket" placeholder="例如: my-images"></div>
+									<div class="form-group"><label>自定义域名 (可选)</label><input type="url" class="form-control" id="r2_domain" placeholder="https://img.example.com"></div>
+								</div></div>
+								<div class="panel panel-info"><div class="panel-heading">Telegram 私有频道设置</div><div class="panel-body">
+									<div class="form-group"><label>Bot Token</label><input type="password" class="form-control" id="tg_bot_token" placeholder="BotFather 提供的 Token"></div>
+									<div class="form-group"><label>Chat ID</label><input type="text" class="form-control" id="tg_chat_id" placeholder="频道的 Chat ID"></div>
+								</div></div>
+								<div class="panel panel-info"><div class="panel-heading">GitHub 存储设置</div><div class="panel-body">
+									<div class="form-group"><label>Personal Access Token</label><input type="password" class="form-control" id="gh_token" placeholder="ghp_xxxxxx"></div>
+									<div class="form-group"><label>仓库 (Repo)</label><input type="text" class="form-control" id="gh_repo" placeholder="如: user/repo"></div>
+								</div></div>
+								<div class="panel panel-info"><div class="panel-heading">七牛云设置</div><div class="panel-body">
+									<div class="form-group"><label>Access Key (AK)</label><input type="text" class="form-control" id="qiniu_ak"></div>
+									<div class="form-group"><label>Secret Key (SK)</label><input type="password" class="form-control" id="qiniu_sk"></div>
+									<div class="form-group"><label>Bucket 空间名</label><input type="text" class="form-control" id="qiniu_bucket"></div>
+									<div class="form-group"><label>绑定域名</label><input type="url" class="form-control" id="qiniu_domain" placeholder="http://xxxx.clouddn.com"></div>
+								</div></div>
+								<a tabindex="0" role="button" class="btn btn-primary" onclick="saveImageStorageSettings()"><i class="fas fa-save"></i> 保存存储设置</a>
 							</form>
 						</div>
 					</div>
@@ -1080,18 +1073,13 @@ tinymce.init({
 			$('#marqueeSpeed').val(`{{ OPT.marqueeSpeed }}`);
 			$('#showMarqueeOnIndex').prop('checked', `{{ OPT.showMarqueeOnIndex }}` === 'true');
 			$('#showMarqueeOnArticle').prop('checked', `{{ OPT.showMarqueeOnArticle }}` === 'true');
-			const footerLinksContainer = $('#footer-links-container');
-			$('#r2_bucket').val(`{{& r2_bucket }}`);
-			$('#r2_domain').val(`{{& r2_domain }}`);
-			$('#tg_bot_token').val(`{{& tg_bot_token }}`);
-			$('#tg_chat_id').val(`{{& tg_chat_id }}`);
-			$('#gh_token').val(`{{& gh_token }}`);
-			$('#gh_repo').val(`{{& gh_repo }}`);
-			$('#qiniu_ak').val(`{{& qiniu_ak }}`);
-			$('#qiniu_sk').val(`{{& qiniu_sk }}`);
-			$('#qiniu_bucket').val(`{{& qiniu_bucket }}`);
-			$('#qiniu_domain').val(`{{& qiniu_domain }}`);
+			$('#r2_bucket').val(`{{& r2_bucket }}`); $('#r2_domain').val(`{{& r2_domain }}`);
+			$('#tg_bot_token').val(`{{& tg_bot_token }}`); $('#tg_chat_id').val(`{{& tg_chat_id }}`);
+			$('#gh_token').val(`{{& gh_token }}`); $('#gh_repo').val(`{{& gh_repo }}`);
+			$('#qiniu_ak').val(`{{& qiniu_ak }}`); $('#qiniu_sk').val(`{{& qiniu_sk }}`);
+			$('#qiniu_bucket').val(`{{& qiniu_bucket }}`); $('#qiniu_domain').val(`{{& qiniu_domain }}`);
 			$('#active_storage_node').val(`{{& active_storage_node }}` || 'r2');
+			const footerLinksContainer = $('#footer-links-container');
 			footerLinksContainer.empty();
 			try {
                 var tempDiv = $('<div>');
@@ -2053,81 +2041,39 @@ function loadComments() {
 			container.append(`<button data-page="${totalPages}">${totalPages}</button>`);
 		}
 	}
-	// --- START: 图片管理脚本 ---
+	// --- START: 图片管理 JS ---
 	function saveImageStorageSettings() {
-		var configData = [
-			{ name: 'r2_bucket', value: $('#r2_bucket').val().trim() }, { name: 'r2_domain', value: $('#r2_domain').val().trim() },
-			{ name: 'tg_bot_token', value: $('#tg_bot_token').val().trim() }, { name: 'tg_chat_id', value: $('#tg_chat_id').val().trim() },
-			{ name: 'gh_token', value: $('#gh_token').val().trim() }, { name: 'gh_repo', value: $('#gh_repo').val().trim() },
-			{ name: 'qiniu_ak', value: $('#qiniu_ak').val().trim() }, { name: 'qiniu_sk', value: $('#qiniu_sk').val().trim() },
-			{ name: 'qiniu_bucket', value: $('#qiniu_bucket').val().trim() }, { name: 'qiniu_domain', value: $('#qiniu_domain').val().trim() },
-			{ name: 'active_storage_node', value: $('#active_storage_node').val() }
-		];
-		$.ajax({
-			type: "POST", dataType: "json", contentType: "application/json; charset=utf-8",
-			url: "/admin/saveConfig/", data: JSON.stringify(configData),
-			success: function () { alert("图片存储设置保存成功！"); },
-			error: function() { alert('保存失败，请检查网络状态。'); }
-		});
+		var configData = ['r2_bucket','r2_domain','tg_bot_token','tg_chat_id','gh_token','gh_repo','qiniu_ak','qiniu_sk','qiniu_bucket','qiniu_domain','active_storage_node'].map(id => ({ name: id, value: $('#'+id).val().trim() }));
+		$.ajax({ type: "POST", dataType: "json", contentType: "application/json; charset=utf-8", url: "/admin/saveConfig/", data: JSON.stringify(configData), success: function () { alert("图片存储设置保存成功！"); }, error: function() { alert('保存失败'); } });
 	}
 
 	function loadImages() {
-		$('#image-gallery-list').html('<div style="width:100%; text-align:center; padding:30px; color:#999;"><i class="fas fa-spinner fa-spin fa-2x"></i><br>加载中...</div>');
+		$('#image-gallery-list').html('<p style="padding:15px;color:#666;">加载中...</p>');
 		$.getJSON("/admin/api/images", function(res) {
-			var html = '';
-			if (res && res.length > 0) {
-				$.each(res, function(i, img) {
-					var nodeLabel = img.storage_node ? `<span class="label label-info" style="font-size:10px;">${img.storage_node}</span>` : '';
-					html += `<div class="image-card" id="img-card-${img.id}">
-								<a href="${img.url}" target="_blank"><img src="${img.url}" alt="${img.name}"></a>
-								<div class="image-info">
-									<strong title="${img.name}">${img.name.length > 15 ? img.name.substring(0,15)+'...' : img.name}</strong><br>
-									${img.date} ${nodeLabel}
-								</div>
-								<div class="btn-group-sm">
-									<button class="btn btn-default" onclick="copyImageUrl('${img.url}')"><i class="fas fa-copy"></i> 复制</button>
-									<button class="btn btn-danger" onclick="deleteImage('${img.id}')"><i class="fas fa-trash"></i> 删除</button>
-								</div>
-							</div>`;
-				});
-			} else {
-				html = '<div style="width:100%; text-align:center; padding:30px; color:#999;">暂无图片，请在上方上传。</div>';
-			}
+			var html = res.length > 0 ? res.map(img => `<div class="image-card" id="img-${img.id}">
+				<img src="${img.url}" alt="img"><div class="image-info"><strong>${img.name}</strong><br>${img.upload_date}</div>
+				<div class="btn-group-sm"><button class="btn btn-default btn-xs" onclick="navigator.clipboard.writeText('${img.url}').then(()=>alert('链接已复制'))">复制链接</button><button class="btn btn-danger btn-xs" onclick="deleteImage('${img.id}')">删除</button></div></div>`).join('') : '<p style="padding:15px;">暂无图片</p>';
 			$('#image-gallery-list').html(html);
-		}).fail(function() { $('#image-gallery-list').html('<div style="width:100%; text-align:center; padding:30px; color:red;">加载图片失败，请确保后端接口正常。</div>'); });
+		}).fail(function() { $('#image-gallery-list').html('<p style="padding:15px;color:red;">加载失败，请配置 Worker 接口</p>'); });
 	}
 
 	function uploadImage() {
-		var fileInput = $('#imageFileInput')[0];
-		if (fileInput.files.length === 0) { alert("请先选择要上传的图片！"); return; }
-		var formData = new FormData(); formData.append("file", fileInput.files[0]);
-		
-		$('#btn-upload-image').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> 上传中...');
-		$.ajax({
-			url: '/admin/api/upload_image', type: 'POST', data: formData, processData: false, contentType: false,
-			success: function(res) { alert("上传成功！"); $('#imageFileInput').val(''); loadImages(); },
-			error: function(err) { alert("上传失败：" + (err.responseJSON ? err.responseJSON.msg : "请检查节点配置。")); },
+		if ($('#imageFileInput')[0].files.length === 0) return alert("请先选择图片！");
+		var formData = new FormData(); formData.append("file", $('#imageFileInput')[0].files[0]);
+		$('#btn-upload-image').prop('disabled', true).text('上传中...');
+		$.ajax({ url: '/admin/api/upload_image', type: 'POST', data: formData, processData: false, contentType: false,
+			success: function() { alert("上传成功！"); $('#imageFileInput').val(''); loadImages(); },
+			error: function() { alert("上传失败，请检查设置。"); },
 			complete: function() { $('#btn-upload-image').prop('disabled', false).html('<i class="fas fa-upload"></i> 上传图片'); }
 		});
 	}
 
-	function copyImageUrl(url) {
-		navigator.clipboard.writeText(url).then(() => alert("图片链接已复制！"));
-	}
-
 	function deleteImage(id) {
-		if (confirm("确定要删除这张图片吗？（注意：这仅会删除数据库记录，第三方桶中的原文件需手动清理）")) {
-			$.ajax({ url: '/admin/api/images/' + id, type: 'DELETE',
-				success: function() { $('#img-card-' + id).fadeOut(300, function(){ $(this).remove(); }); },
-				error: function() { alert("删除失败！"); }
-			});
-		}
+		if (confirm("确定删除吗？")) { $.ajax({ url: '/admin/api/images/' + id, type: 'DELETE', success: function() { $('#img-' + id).remove(); } }); }
 	}
 
-	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-		if(e.target.hash == "#image-manager"){ loadImages(); }
-	});
-	// --- END: 图片管理脚本 ---
+	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) { if(e.target.hash == "#image-manager") loadImages(); });
+	// --- END: 图片管理 JS ---
 	// END: 新增
 </script>
 
