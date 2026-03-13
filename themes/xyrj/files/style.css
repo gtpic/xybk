@@ -42,7 +42,7 @@
     margin: 0;
     padding: 0;
 }
-html, body {
+html {
     overflow-y: scroll; 
     scrollbar-gutter: stable; 
 }
