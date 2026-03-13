@@ -140,11 +140,9 @@ async function handleRequest({ request, env, ctx }) {
                 data["admin_password"] = configs["admin_password"] || '';
                 data["siteName"] = configs["siteName"] || '';
                 data["logo"] = configs["logo"] || '';
-				data["r2_bucket"] = configs["r2_bucket"] || ''; data["r2_domain"] = configs["r2_domain"] || '';
+				data["r2"] = configs["r2"] || ''; data["r2_domain"] = configs["r2_domain"] || '';
                 data["tg_bot_token"] = configs["tg_bot_token"] || ''; data["tg_chat_id"] = configs["tg_chat_id"] || '';
                 data["gh_token"] = configs["gh_token"] || ''; data["gh_repo"] = configs["gh_repo"] || '';
-                data["qiniu_ak"] = configs["qiniu_ak"] || ''; data["qiniu_sk"] = configs["qiniu_sk"] || '';
-                data["qiniu_bucket"] = configs["qiniu_bucket"] || ''; data["qiniu_domain"] = configs["qiniu_domain"] || '';
                 data["active_storage_node"] = configs["active_storage_node"] || 'r2';
                 if (configs["showSiteNameInHeader"] === 'false') {
                     data["showSiteNameInHeader_false"] = true;
@@ -367,6 +365,61 @@ async function handleRequest({ request, env, ctx }) {
 			const slideId = pathname.split('/').pop();
             await env.db.prepare("DELETE FROM carousel WHERE id = ?").bind(slideId).run();
 			return new Response('Carousel slide deleted', { status: 200 });
+		}
+		else if (pathname.startsWith("/image/")) {
+			const fileName = pathname.replace('/image/', '');
+			const configs = await getConfigs(env);
+			const activeNode = configs["active_storage_node"] || 'r2';
+			const cacheKey = new Request(url.toString(), request);
+			const cache = caches.default;
+			
+			let cachedResponse = await cache.match(cacheKey);
+			if (cachedResponse) return cachedResponse;
+
+			let imgResponse;
+			if (activeNode === 'r2') {
+                // 注意：请确保在 CF 控制台为该 Worker 绑定了名为 r2 的变量
+				if (!env.r2) return new Response("R2 未绑定", { status: 500 });
+				const object = await env.r2.get(fileName);
+				if (!object) return new Response("图片不存在", { status: 404 });
+				const headers = new Headers();
+				object.writeHttpMetadata(headers);
+				headers.set('etag', object.httpEtag);
+				headers.set('Cache-Control', 'public, max-age=31536000');
+				imgResponse = new Response(object.body, { headers });
+			} else if (activeNode === 'tg') {
+				const fileId = fileName.split('.')[0]; 
+				const tgToken = configs["tg_bot_token"];
+				const getFileUrl = `https://api.telegram.org/bot${tgToken}/getFile?file_id=${fileId}`;
+				const fileData = await (await fetch(getFileUrl)).json();
+				if (fileData.ok) {
+					const imgRes = await fetch(`https://api.telegram.org/file/bot${tgToken}/${fileData.result.file_path}`);
+					const headers = new Headers(imgRes.headers);
+					headers.set('Cache-Control', 'public, max-age=31536000');
+					imgResponse = new Response(imgRes.body, { headers });
+				} else {
+					return new Response("TG 图片不存在", { status: 404 });
+				}
+			} else if (activeNode === 'github') {
+				const ghToken = configs["gh_token"];
+				const ghUserRepo = configs["gh_repo"];
+				const rawUrl = `https://raw.githubusercontent.com/${ghUserRepo}/main/${fileName}`;
+				const headers = { 'User-Agent': 'Cloudflare-Worker' };
+				if (ghToken) headers['Authorization'] = `token ${ghToken}`;
+				const imgRes = await fetch(rawUrl, { headers });
+				if (!imgRes.ok) return new Response('图片不存在', { status: 404 });
+				const newHeaders = new Headers(imgRes.headers);
+				newHeaders.set('Cache-Control', 'public, max-age=31536000');
+				newHeaders.delete('Authorization');
+				imgResponse = new Response(imgRes.body, { status: imgRes.status, headers: newHeaders });
+			} else {
+				return new Response("当前节点不支持代理", { status: 400 });
+			}
+
+			if (imgResponse) {
+				ctx.waitUntil(cache.put(cacheKey, imgResponse.clone()));
+				return imgResponse;
+			}
 		}
 		else {
 			return await getStaticFile(request, env, ctx);
