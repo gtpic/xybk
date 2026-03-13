@@ -141,7 +141,6 @@ async function handleRequest({ request, env, ctx }) {
                 data["siteName"] = configs["siteName"] || '';
                 data["logo"] = configs["logo"] || '';
                 data["tg_bot_token"] = configs["tg_bot_token"] || ''; data["tg_chat_id"] = configs["tg_chat_id"] || '';
-                data["gh_token"] = configs["gh_token"] || ''; data["gh_repo"] = configs["gh_repo"] || '';
                 data["active_storage_node"] = configs["active_storage_node"] || 'r2';
                 if (configs["showSiteNameInHeader"] === 'false') {
                     data["showSiteNameInHeader_false"] = true;
@@ -342,19 +341,6 @@ async function handleRequest({ request, env, ctx }) {
 							const tgData = await tgRes.json();
 							if (!tgData.ok) return new Response("TG上传失败", { status: 500 });
 							finalUrl = `/image/${tgData.result.document.file_id}.${fileExt}`;
-						} else if (activeNode === 'github') {
-							const ghToken = configs["gh_token"];
-							const ghRepo = configs["gh_repo"];
-							if (!ghToken || !ghRepo) return new Response("GitHub配置缺失", { status: 400 });
-							const base64Content = btoa(String.fromCharCode(...new Uint8Array(fileArrayBuffer)));
-							const filePath = `uploads/${new Date().toISOString().substring(0, 10).replace(/-/g, '/')}/${fileName}`;
-							const ghRes = await fetch(`https://api.github.com/repos/${ghRepo}/contents/${filePath}`, {
-								method: 'PUT',
-								headers: { 'Authorization': `token ${ghToken}`, 'User-Agent': 'Cloudflare-Worker' },
-								body: JSON.stringify({ message: `Upload ${fileName}`, content: base64Content })
-							});
-							if (!ghRes.ok) return new Response("GitHub上传失败", { status: 500 });
-							finalUrl = `/image/${filePath}`;
 						} else if (activeNode === 'r2' && env.r2) {
 							await env.r2.put(fileName, fileArrayBuffer, { httpMetadata: { contentType: file.type } });
 							finalUrl = `/image/${fileName}`;
@@ -474,18 +460,6 @@ async function handleRequest({ request, env, ctx }) {
 				} else {
 					return new Response("TG 图片不存在", { status: 404 });
 				}
-			} else if (activeNode === 'github') {
-				const ghToken = configs["gh_token"];
-				const ghUserRepo = configs["gh_repo"];
-				const rawUrl = `https://raw.githubusercontent.com/${ghUserRepo}/main/${fileName}`;
-				const headers = { 'User-Agent': 'Cloudflare-Worker' };
-				if (ghToken) headers['Authorization'] = `token ${ghToken}`;
-				const imgRes = await fetch(rawUrl, { headers });
-				if (!imgRes.ok) return new Response('图片不存在', { status: 404 });
-				const newHeaders = new Headers(imgRes.headers);
-				newHeaders.set('Cache-Control', 'public, max-age=31536000');
-				newHeaders.delete('Authorization');
-				imgResponse = new Response(imgRes.body, { status: imgRes.status, headers: newHeaders });
 			} else {
 				return new Response("当前节点不支持代理", { status: 400 });
 			}
