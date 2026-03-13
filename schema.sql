@@ -44,3 +44,11 @@ CREATE TABLE carousel (
     linkUrl TEXT,
     sortOrder INTEGER DEFAULT 0
 );
+
+CREATE TABLE images (
+    id TEXT PRIMARY KEY,
+    name TEXT,
+    url TEXT NOT NULL,
+    storage_node TEXT,
+    upload_date DATETIME DEFAULT CURRENT_TIMESTAMP
+);
