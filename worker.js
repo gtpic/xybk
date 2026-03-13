@@ -140,7 +140,6 @@ async function handleRequest({ request, env, ctx }) {
                 data["admin_password"] = configs["admin_password"] || '';
                 data["siteName"] = configs["siteName"] || '';
                 data["logo"] = configs["logo"] || '';
-				data["r2"] = configs["r2"] || ''; data["r2_domain"] = configs["r2_domain"] || '';
                 data["tg_bot_token"] = configs["tg_bot_token"] || ''; data["tg_chat_id"] = configs["tg_chat_id"] || '';
                 data["gh_token"] = configs["gh_token"] || ''; data["gh_repo"] = configs["gh_repo"] || '';
                 data["active_storage_node"] = configs["active_storage_node"] || 'r2';
