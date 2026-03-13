@@ -294,6 +294,81 @@ async function handleRequest({ request, env, ctx }) {
 						return new Response(JSON.stringify({ msg: e.message }), { status: 500 });
 					  }
 				}
+				// --- START: 优化后的图片管理 API (全格式支持 & 异常保护) ---
+				else if (pathname === '/admin/api/images' && request.method === 'GET') {
+					try {
+						// 限制 100 张防止加载过慢，增加空值保护
+						const { results } = await env.db.prepare("SELECT * FROM images ORDER BY upload_date DESC LIMIT 100").all();
+						return new Response(JSON.stringify(results || []), { status: 200, headers: { 'Content-Type': 'application/json' } });
+					} catch (e) {
+						return new Response(JSON.stringify([]), { status: 200, headers: { 'Content-Type': 'application/json' } });
+					}
+				}
+				else if (pathname.startsWith('/admin/api/images/') && request.method === 'DELETE') {
+					const imageId = pathname.split('/').pop();
+					try {
+						await env.db.prepare("DELETE FROM images WHERE id = ?").bind(imageId).run();
+						return new Response(JSON.stringify({ msg: "OK" }), { status: 200 });
+					} catch (e) {
+						return new Response(JSON.stringify({ msg: e.message }), { status: 500 });
+					}
+				}
+				else if (pathname === '/admin/api/upload_image' && request.method === 'POST') {
+					try {
+						const formData = await request.formData();
+						const file = formData.get('file');
+						if (!file) return new Response("没有接收到文件", { status: 400 });
+
+						// --- 格式校验：支持 image/* 以及特殊的 ico, svg ---
+						const isImage = file.type.startsWith('image/') || 
+										/\.(ico|svg|webp|avif)$/i.test(file.name);
+						if (!isImage) return new Response("只允许上传图片格式 (包含 ico, svg, webp 等)", { status: 400 });
+
+						const configs = await getConfigs(env);
+						const activeNode = configs["active_storage_node"] || 'tg';
+						const fileExt = file.name.split('.').pop().toLowerCase();
+						const fileArrayBuffer = await file.arrayBuffer();
+						const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
+						let finalUrl = '';
+
+						if (activeNode === 'tg') {
+							const tgToken = configs["tg_bot_token"];
+							const tgChatId = configs["tg_chat_id"];
+							if (!tgToken || !tgChatId) return new Response("TG配置缺失", { status: 400 });
+							const tgFormData = new FormData();
+							tgFormData.append('chat_id', tgChatId);
+							tgFormData.append('document', new Blob([fileArrayBuffer]), fileName);
+							const tgRes = await fetch(`https://api.telegram.org/bot${tgToken}/sendDocument`, { method: 'POST', body: tgFormData });
+							const tgData = await tgRes.json();
+							if (!tgData.ok) return new Response("TG上传失败", { status: 500 });
+							finalUrl = `/image/${tgData.result.document.file_id}.${fileExt}`;
+						} else if (activeNode === 'github') {
+							const ghToken = configs["gh_token"];
+							const ghRepo = configs["gh_repo"];
+							if (!ghToken || !ghRepo) return new Response("GitHub配置缺失", { status: 400 });
+							const base64Content = btoa(String.fromCharCode(...new Uint8Array(fileArrayBuffer)));
+							const filePath = `uploads/${new Date().toISOString().substring(0, 10).replace(/-/g, '/')}/${fileName}`;
+							const ghRes = await fetch(`https://api.github.com/repos/${ghRepo}/contents/${filePath}`, {
+								method: 'PUT',
+								headers: { 'Authorization': `token ${ghToken}`, 'User-Agent': 'Cloudflare-Worker' },
+								body: JSON.stringify({ message: `Upload ${fileName}`, content: base64Content })
+							});
+							if (!ghRes.ok) return new Response("GitHub上传失败", { status: 500 });
+							finalUrl = `/image/${filePath}`;
+						} else if (activeNode === 'r2' && env.r2) {
+							await env.r2.put(fileName, fileArrayBuffer, { httpMetadata: { contentType: file.type } });
+							finalUrl = `/image/${fileName}`;
+						}
+
+						const imgId = crypto.randomUUID();
+						const uploadDate = new Date().toISOString().replace('T', ' ').substring(0, 19);
+						await env.db.prepare("INSERT INTO images (id, name, url, storage_node, upload_date) VALUES (?, ?, ?, ?, ?)")
+							.bind(imgId, file.name, finalUrl, activeNode, uploadDate).run();
+
+						return new Response(JSON.stringify({ msg: "OK", url: finalUrl }), { status: 200 });
+					} catch (e) { return new Response(e.stack, { status: 500 }); }
+				}
+				// --- END: 优化后的图片管理 API ---
 			}
 			else {
 				return new Response("Unauthorized", { status: 401 });
