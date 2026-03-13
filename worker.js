@@ -140,6 +140,12 @@ async function handleRequest({ request, env, ctx }) {
                 data["admin_password"] = configs["admin_password"] || '';
                 data["siteName"] = configs["siteName"] || '';
                 data["logo"] = configs["logo"] || '';
+				data["r2_bucket"] = configs["r2_bucket"] || ''; data["r2_domain"] = configs["r2_domain"] || '';
+                data["tg_bot_token"] = configs["tg_bot_token"] || ''; data["tg_chat_id"] = configs["tg_chat_id"] || '';
+                data["gh_token"] = configs["gh_token"] || ''; data["gh_repo"] = configs["gh_repo"] || '';
+                data["qiniu_ak"] = configs["qiniu_ak"] || ''; data["qiniu_sk"] = configs["qiniu_sk"] || '';
+                data["qiniu_bucket"] = configs["qiniu_bucket"] || ''; data["qiniu_domain"] = configs["qiniu_domain"] || '';
+                data["active_storage_node"] = configs["active_storage_node"] || 'r2';
                 if (configs["showSiteNameInHeader"] === 'false') {
                     data["showSiteNameInHeader_false"] = true;
                 } else {
