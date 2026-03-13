@@ -865,11 +865,11 @@ tinymce.init({
     language: 'zh_CN',
     height: 640,
     /* ⬇️ 第1步：告诉编辑器加载您的前台CSS ⬇️ */
-    content_css: '{{ &OPT.theme_github_path }}xyrj/admin/files/style.css', 
+	content_css: '{{ &OPT.theme_github_path }}xyrj/files/style.css',
     /* ⬇️ 第2步：(关键)给编辑器内部添加类名, 让CSS生效 ⬇️ */
     body_class: 'entry-content', 
     plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak searchreplace wordcount visualblocks visualchars code codesample fullscreen insertdatetime media nonbreaking save table directionality emoticons template paste',
-	toolbar: 'insertfile undo redo styleselect fontsizeselect lineheight paragraphspacing bold italic alignleft aligncenter alignright alignjustify bullist numlist outdent indent link image print preview media forecolor backcolor emoticons codesample fgxBox infoBox warningBox code',
+	toolbar: 'insertfile undo redo styleselect fontsizeselect lineheight paragraphspacing bold italic alignleft aligncenter alignright alignjustify bullist numlist outdent indent link image print preview media forecolor backcolor emoticons codesample infoBox warningBox code',
 	mobile: {
         toolbar_mode: 'wrap'
     },
@@ -909,10 +909,6 @@ tinymce.init({
     ],
 	/* --- START: 在这里添加您的模板 --- */
 	template_templates: [
-		{title: '文字下面分割线)', 
-			description: '插入一个灰色的横线', 
-			content: '<div style="padding-bottom: .3em;border-bottom: 1px solid #eaecef;">在这里输入分隔线...</div>' 
-		},
 		{title: '提示框 (信息)', 
 			description: '插入一个蓝色的信息提示框', 
 			content: '<div style="padding: 15px; background-color: #f0f7fd; border: 1px solid #d4e8fa; border-radius: 4px; color: #31708f;">在这里输入提示信息...</div>' 
@@ -970,18 +966,6 @@ tinymce.init({
 			});
 			// --- END FIX ---
 
-			// 1. 添加 "信息提示框" 按钮 (对应 infoBox)
-			editor.ui.registry.addButton('fgxBox', {
-			  text: '分隔线', // 您可以用图标，也可以用文字
-			  //icon: 'info',  // 使用内置的 "info" 图标
-			  tooltip: '插入分隔线提示框', // 鼠标悬停提示
-			  onAction: function () {
-				// 这是您模板里的 content 内容
-				var content = '<div style="padding-bottom: .3em;border-bottom: 1px solid #eaecef;"></div>';
-				editor.insertContent(content); // 插入内容
-			  }
-			});
-			
 			// 1. 添加 "信息提示框" 按钮 (对应 infoBox)
 			editor.ui.registry.addButton('infoBox', {
 			  // text: '提示', // 您可以用图标，也可以用文字
