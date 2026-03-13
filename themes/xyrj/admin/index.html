@@ -19,6 +19,10 @@
 	<script src="{{ &OPT.theme_github_path }}xyrj/admin/files/defaults-zh_CN.min.js"></script>
 	<script src="{{ &OPT.theme_github_path }}xyrj/admin/files/Sortable.min.js"></script>
 	<style>
+		html, body {
+			overflow-y: scroll; /* 强制显示垂直滚动条，防止数据加载后页面左右跳动 */
+			scrollbar-gutter: stable; /* 现代浏览器：提前为滚动条预留好空间 */
+		}
 		.pagination-controls {
 			display: flex;
 			justify-content: space-between;
