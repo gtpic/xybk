@@ -693,8 +693,8 @@
                 // 3. 检查后端的响应
                 if (response.ok) { // response.ok 意味着状态码是 200-299
                     // 登录成功！Worker 验证通过
-                    document.cookie = "password=" + enteredPassword + ";path=/";
-                    document.cookie = "username=" + enteredUsername + ";path=/";
+					document.cookie = "password=" + encodeURIComponent(enteredPassword) + ";path=/; SameSite=Strict; Secure";
+					document.cookie = "username=" + encodeURIComponent(enteredUsername) + ";path=/; SameSite=Strict; Secure";
                     sessionStorage.setItem('isAdminLoggedIn', 'true');
                     checkLoginStatus();
                 } else {
@@ -2035,7 +2035,12 @@ function loadComments() {
 				<img src="${img.url}" alt="img"><div class="image-info"><strong>${img.name}</strong><br>${img.upload_date}</div>
 				<div class="btn-group-sm"><button class="btn btn-default btn-xs" onclick="navigator.clipboard.writeText('${img.url}').then(()=>alert('链接已复制'))">复制链接</button><button class="btn btn-danger btn-xs" onclick="deleteImage('${img.id}')">删除</button></div></div>`).join('') : '<p style="padding:15px;">暂无图片</p>';
 			$('#image-gallery-list').html(html);
-		}).fail(function() { $('#image-gallery-list').html('<p style="padding:15px;color:red;">加载失败，请配置 Worker 接口</p>'); });
+		}).fail(function(jqXHR) { 
+			var errMsg = "加载失败，请配置 Worker 接口";
+			if (jqXHR.responseJSON && jqXHR.responseJSON.error) errMsg += " | 数据库错误: " + jqXHR.responseJSON.error;
+			else if (jqXHR.responseText) errMsg += " | 详情: " + jqXHR.responseText.substring(0, 100);
+			$('#image-gallery-list').html('<p style="padding:15px;color:red;">' + errMsg + '<br><br><b>提示:</b> 请确保 D1 数据库已创建 images 表。</p>'); 
+		});
 	}
 
 	function uploadImage() {
