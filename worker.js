@@ -136,6 +136,8 @@ async function handleRequest({ request, env, ctx }) {
                 data["site_footer_copyright"] = configs["site_footer_copyright"] || '';
                 data["site_description"] = configs["site_description"] || '';
                 data["site_keywords"] = configs["site_keywords"] || '';
+				data["admin_username"] = configs["admin_username"] || '';
+                data["admin_password"] = configs["admin_password"] || '';
                 data["siteName"] = configs["siteName"] || '';
                 data["logo"] = configs["logo"] || '';
                 if (configs["showSiteNameInHeader"] === 'false') {
