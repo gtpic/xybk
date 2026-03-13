@@ -526,17 +526,13 @@
 								<div class="form-group">
 									<label>当前生效的存储节点</label>
 									<select class="form-control" id="active_storage_node" name="active_storage_node">
-										<option value="r2">Cloudflare R2 桶</option><option value="tg">Telegram 私有频道</option>
-										<option value="github">GitHub 仓库</option>
-									</select>
+										<option value="r2">Cloudflare R2 桶</option>
+										<option value="tg">Telegram 私有频道</option>
+										</select>
 								</div>
 								<div class="panel panel-info"><div class="panel-heading">Telegram 私有频道设置</div><div class="panel-body">
 									<div class="form-group"><label>Bot Token</label><input type="password" class="form-control" id="tg_bot_token" placeholder="BotFather 提供的 Token"></div>
 									<div class="form-group"><label>Chat ID</label><input type="text" class="form-control" id="tg_chat_id" placeholder="频道的 Chat ID"></div>
-								</div></div>
-								<div class="panel panel-info"><div class="panel-heading">GitHub 存储设置</div><div class="panel-body">
-									<div class="form-group"><label>Personal Access Token</label><input type="password" class="form-control" id="gh_token" placeholder="ghp_xxxxxx"></div>
-									<div class="form-group"><label>仓库 (Repo)</label><input type="text" class="form-control" id="gh_repo" placeholder="如: user/repo"></div>
 								</div></div>
 								<a tabindex="0" role="button" class="btn btn-primary" onclick="saveImageStorageSettings()"><i class="fas fa-save"></i> 保存存储设置</a>
 							</form>
@@ -1064,7 +1060,6 @@ tinymce.init({
 			$('#showMarqueeOnIndex').prop('checked', `{{ OPT.showMarqueeOnIndex }}` === 'true');
 			$('#showMarqueeOnArticle').prop('checked', `{{ OPT.showMarqueeOnArticle }}` === 'true');
 			$('#tg_bot_token').val(`{{& tg_bot_token }}`); $('#tg_chat_id').val(`{{& tg_chat_id }}`);
-			$('#gh_token').val(`{{& gh_token }}`); $('#gh_repo').val(`{{& gh_repo }}`);
 			$('#active_storage_node').val(`{{& active_storage_node }}` || 'r2');
 			const footerLinksContainer = $('#footer-links-container');
 			footerLinksContainer.empty();
@@ -2030,7 +2025,7 @@ function loadComments() {
 	}
 	// --- START: 图片管理 JS ---
 	function saveImageStorageSettings() {
-		var configData = ['tg_bot_token','tg_chat_id','gh_token','gh_repo','active_storage_node'].map(id => ({ name: id, value: $('#'+id).val().trim() }));
+		var configData = ['tg_bot_token','tg_chat_id','active_storage_node'].map(id => ({ name: id, value: $('#'+id).val().trim() }));
 		$.ajax({ type: "POST", dataType: "json", contentType: "application/json; charset=utf-8", url: "/admin/saveConfig/", data: JSON.stringify(configData), success: function () { alert("图片存储设置保存成功！"); }, error: function() { alert('保存失败'); } });
 	}
 
