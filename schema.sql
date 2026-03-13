@@ -45,10 +45,10 @@ CREATE TABLE carousel (
     sortOrder INTEGER DEFAULT 0
 );
 
-CREATE TABLE images (
+CREATE TABLE IF NOT EXISTS images (
     id TEXT PRIMARY KEY,
     name TEXT,
-    url TEXT NOT NULL,
+    url TEXT,
     storage_node TEXT,
-    upload_date DATETIME DEFAULT CURRENT_TIMESTAMP
+    upload_date TEXT
 );
