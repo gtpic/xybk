@@ -339,6 +339,17 @@
 			<div class="tab-pane fade" id="site-config">
 				<div class="container-fluid">
 					<h3>网站设置</h3>
+					
+					<ul class="nav nav-tabs" style="margin-bottom: 15px;">
+						<li class="active"><a data-toggle="tab" href="#config-basic">基础设置</a></li>
+						<li><a data-toggle="tab" href="#config-features">功能设置</a></li>
+						<li><a data-toggle="tab" href="#config-links">友情链接</a></li>
+						<li><a data-toggle="tab" href="#config-io">导出/导入</a></li>
+					</ul>
+					
+					<div class="tab-content">
+					
+					<div id="config-basic" class="tab-pane fade in active">
 					<form id="configForm" role="form">
 						<div class="form-group">
 							<label for="siteName">博客名称 (可选, 用于登录页)</label>
@@ -363,6 +374,15 @@
 							<label for="site_keywords">网站关键词</label>
 							<textarea class="form-control" id="site_keywords" name="site_keywords" rows="3" placeholder="例如：技术,博客,Cloudflare"></textarea>
 						</div>
+						
+						<a tabindex="0" role="button" type="button" class="btn btn-primary" onclick="saveSiteSettings()">
+							<i class="fas fa-save"></i> 保存基础设置
+						</a>
+					</form>
+					</div>
+
+					<div id="config-features" class="tab-pane fade">
+					<form role="form">
 						<div class="form-group">
 							<label>页脚链接管理</label>
 							<div id="footer-links-container">
@@ -396,8 +416,16 @@
 								</label>
 							</div>
 						</div>
-						<hr/>
-<div class="form-group">
+						
+						<a tabindex="0" role="button" type="button" class="btn btn-primary" onclick="saveSiteSettings()">
+							<i class="fas fa-save"></i> 保存功能设置
+						</a>
+					</form>
+					</div>
+
+					<div id="config-links" class="tab-pane fade">
+					<form role="form">
+						<div class="form-group">
 							<label>友情链接</label>
 							<div class="alert alert-info" style="font-size: 13px;">
 								<b>使用说明:</b><br>
@@ -418,12 +446,14 @@
 							</div>
 							<textarea id="WidgetLink" name="WidgetLink" style="display: none;"></textarea>
 						</div>
+						
 						<a tabindex="0" role="button" type="button" class="btn btn-primary" onclick="saveSiteSettings()">
-							<i class="fas fa-save"></i> 保存网站设置
+							<i class="fas fa-save"></i> 保存友情链接
 						</a>
 					</form>
-					<hr/>
-					<h3>导入/导出</h3>
+					</div>
+
+					<div id="config-io" class="tab-pane fade">
 					<form id="importForm" role="form" >
 						<div class="form-group">
 							<label for="name">将下方完整JSON复制/粘贴可用于备份和恢复</label>
@@ -432,6 +462,8 @@
 						<a tabindex="0" role="button" type="button" id="btn_import" class="btn btn-warning" onclick="importBlog()">导入</a>
 						<a tabindex="0" role="button" id="btn_export" class="btn btn-info" href="/admin/export/" target="_blank">导出</a>
 					</form>
+					</div>
+					</div>
 				</div>
 			</div>
 
