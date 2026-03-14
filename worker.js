@@ -356,6 +356,98 @@ async function handleRequest({ request, env, ctx }) {
 					} catch (e) { return new Response(e.stack, { status: 500 }); }
 				}
 				// --- END: 优化后的图片管理 API ---
+				else if (pathname === "/admin/export/" || pathname === "/admin/export") {
+					try {
+						const urlParams = new URL(request.url).searchParams;
+						let backupData = {};
+						
+						// 1. 导出网站设置 (包含 config, comments, carousel)
+						if (urlParams.get('settings') === 'true') {
+							const { results: config } = await env.db.prepare("SELECT * FROM config").all();
+							const { results: comments } = await env.db.prepare("SELECT * FROM comments").all();
+							const { results: carousel } = await env.db.prepare("SELECT * FROM carousel").all();
+							backupData.config = config;
+							backupData.comments = comments;
+							backupData.carousel = carousel;
+						}
+						
+						// 2. 导出我的文章
+						if (urlParams.get('articles') === 'true') {
+							const { results: articles } = await env.db.prepare("SELECT * FROM articles").all();
+							backupData.articles = articles;
+						}
+						
+						// 3. 导出博客图片
+						if (urlParams.get('images') === 'true') {
+							const { results: images } = await env.db.prepare("SELECT * FROM images").all();
+							backupData.images = images;
+						}
+
+						// 返回 JSON 文件下载
+						return new Response(JSON.stringify(backupData), {
+							status: 200,
+							headers: {
+								'Content-Type': 'application/json;charset=UTF-8',
+								'Content-Disposition': `attachment; filename="xybk_backup_${new Date().toISOString().slice(0, 10)}.json"`
+							}
+						});
+					} catch (e) {
+						return new Response(JSON.stringify({ msg: e.message }), { status: 500 });
+					}
+				}
+				else if (pathname === "/admin/import/" && request.method === "POST") {
+					try {
+						let jsonA = await request.json();
+						let importStr = "";
+						jsonA.forEach(item => { if (item.name === 'importJson') importStr = item.value; });
+						let backup = JSON.parse(importStr);
+
+						// 1. 恢复文章数据
+						if (backup.articles && backup.articles.length > 0) {
+							await env.db.prepare("DELETE FROM articles").run();
+							let stmt = env.db.prepare("INSERT INTO articles (id, title, link, createDate, category, tags, content, contentText, firstImageUrl, isPinned, hasPassword, password, views, isHidden, allowComments, changefreq, priority) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+							let batch = backup.articles.map(a => stmt.bind(a.id, a.title, a.link, a.createDate, a.category, a.tags, a.content, a.contentText, a.firstImageUrl, a.isPinned, a.hasPassword, a.password, a.views, a.isHidden, a.allowComments, a.changefreq, a.priority));
+							if (batch.length > 0) await env.db.batch(batch);
+						}
+
+						// 2. 恢复配置数据
+						if (backup.config && backup.config.length > 0) {
+							await env.db.prepare("DELETE FROM config").run();
+							let stmtConfig = env.db.prepare("INSERT INTO config (key, value) VALUES (?, ?)");
+							let batchConfig = backup.config.map(c => stmtConfig.bind(c.key, c.value));
+							if (batchConfig.length > 0) await env.db.batch(batchConfig);
+							await env.kv.delete("cache:config");
+						}
+
+						// 3. 恢复评论数据
+						if (backup.comments && backup.comments.length > 0) {
+							await env.db.prepare("DELETE FROM comments").run();
+							let stmt = env.db.prepare("INSERT INTO comments (id, articleSlug, content, contact, timestamp) VALUES (?, ?, ?, ?, ?)");
+							let batch = backup.comments.map(c => stmt.bind(c.id, c.articleSlug, c.content, c.contact, c.timestamp));
+							if (batch.length > 0) await env.db.batch(batch);
+						}
+
+						// 4. 恢复轮播图数据
+						if (backup.carousel && backup.carousel.length > 0) {
+							await env.db.prepare("DELETE FROM carousel").run();
+							let stmt = env.db.prepare("INSERT INTO carousel (id, imageUrl, linkUrl, sortOrder) VALUES (?, ?, ?, ?)");
+							let batch = backup.carousel.map(c => stmt.bind(c.id, c.imageUrl, c.linkUrl, c.sortOrder));
+							if (batch.length > 0) await env.db.batch(batch);
+						}
+
+						// 5. 恢复图片管理数据
+						if (backup.images && backup.images.length > 0) {
+							await env.db.prepare("DELETE FROM images").run();
+							let stmt = env.db.prepare("INSERT INTO images (id, name, url, storage_node, upload_date) VALUES (?, ?, ?, ?, ?)");
+							let batch = backup.images.map(c => stmt.bind(c.id, c.name, c.url, c.storage_node, c.upload_date));
+							if (batch.length > 0) await env.db.batch(batch);
+						}
+
+						return new Response(JSON.stringify({ "msg": "OK" }), { status: 200, headers: { 'Content-Type': 'application/json' }});
+					} catch (e) {
+						return new Response(JSON.stringify({ "msg": "导入失败: " + e.message }), { status: 500, headers: { 'Content-Type': 'application/json' }});
+					}
+				}
 			}
 			else {
 				return new Response("Unauthorized", { status: 401 });
