@@ -519,6 +519,7 @@ async function render(data, template_path, env) {
     site.logo = configs.logo || "";
     site.siteName = configs.siteName || "";
     site.theme_github_path = configs.theme_github_path || site.theme_github_path;
+	site.favicon = configs.favicon || "";
     site.siteDescription = configs.site_description || "";
     site.siteKeywords = configs.site_keywords || "";
     site.showSiteNameInHeader = configs.showSiteNameInHeader === 'true';
