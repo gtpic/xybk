@@ -138,6 +138,7 @@ async function handleRequest({ request, env, ctx }) {
                 data["site_keywords"] = configs["site_keywords"] || '';
 				data["admin_username"] = configs["admin_username"] || '';
                 data["admin_password"] = configs["admin_password"] || '';
+				data["favicon"] = configs["favicon"] || '';
                 data["siteName"] = configs["siteName"] || '';
                 data["logo"] = configs["logo"] || '';
                 data["tg_bot_token"] = configs["tg_bot_token"] || ''; data["tg_chat_id"] = configs["tg_chat_id"] || '';
