@@ -298,8 +298,8 @@ async function handleRequest({ request, env, ctx }) {
 				// --- START: 优化后的图片管理 API (全格式支持 & 异常保护) ---
 				else if (pathname === '/admin/api/images' && request.method === 'GET') {
 					try {
-						// 限制 100 张防止加载过慢，增加空值保护
-						const { results } = await env.db.prepare("SELECT * FROM images ORDER BY upload_date DESC LIMIT 100").all();
+						// 配合前端分页功能，移除 LIMIT 100 限制，获取全部图片数据
+						const { results } = await env.db.prepare("SELECT * FROM images ORDER BY upload_date DESC").all();
 						return new Response(JSON.stringify(results || []), { status: 200, headers: { 'Content-Type': 'application/json' } });
 					} catch (e) {
 						return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
@@ -312,6 +312,22 @@ async function handleRequest({ request, env, ctx }) {
 						return new Response(JSON.stringify({ msg: "OK" }), { status: 200 });
 					} catch (e) {
 						return new Response(JSON.stringify({ msg: e.message }), { status: 500 });
+					}
+				}
+				else if (pathname.startsWith('/admin/api/images/') && request.method === 'PUT') {
+					const imageId = pathname.split('/').pop();
+					try {
+						const { name } = await request.json();
+						if (!name) return new Response("图片名称不能为空", { status: 400 });
+						
+						// 检查是否与现有其他图片重名
+						const existImg = await env.db.prepare("SELECT id FROM images WHERE name = ? AND id != ?").bind(name, imageId).first();
+						if (existImg) return new Response("已存在同名图片，请更换名称！", { status: 400 });
+
+						await env.db.prepare("UPDATE images SET name = ? WHERE id = ?").bind(name, imageId).run();
+						return new Response(JSON.stringify({ msg: "OK" }), { status: 200 });
+					} catch (e) {
+						return new Response(e.message, { status: 500 });
 					}
 				}
 				else if (pathname === '/admin/api/upload_image' && request.method === 'POST') {
