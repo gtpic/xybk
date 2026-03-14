@@ -2190,7 +2190,28 @@ function loadComments() {
 	});
 
 	function editImage(id) {
-		alert("后端暂未提供修改图片名称/链接的接口，此按钮仅作预留展示。");
+		const img = allImages.find(i => i.id === id);
+		if (!img) return;
+		
+		const newName = prompt("请输入新的图片名称（建议保留后缀）：", img.name);
+		if (newName === null || newName.trim() === "") return;
+		if (newName.trim() === img.name) return; // 没有修改
+		
+		$.ajax({
+			url: '/admin/api/images/' + id,
+			type: 'PUT',
+			contentType: 'application/json',
+			data: JSON.stringify({ name: newName.trim() }),
+			success: function() {
+				alert("图片名称修改成功！");
+				img.name = newName.trim(); // 更新本地数据
+				// 重新渲染当前页
+				renderImagesPage(currentImagePage, imagePageSize);
+			},
+			error: function(xhr) {
+				alert("修改失败：" + (xhr.responseText || "未知错误"));
+			}
+		});
 	}
 
 	function deleteImage(id) {
