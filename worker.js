@@ -129,6 +129,7 @@ async function handleRequest({ request, env, ctx }) {
 			if (pathname === "/admin" || pathname === "/admin/" || pathname.endsWith("/admin/index.html")) {
 				let data = {};
                 const configs = await getConfigs(env);
+				data["title"] = configs["siteName"] || '';
                 data["widgetCategoryList"] = configs["WidgetCategory"] || '[]';
                 data["widgetMenuList"] = configs["WidgetMenu"] || '[]';
                 data["widgetLinkList"] = configs["WidgetLink"] || '[]';
