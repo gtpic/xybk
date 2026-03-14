@@ -744,6 +744,10 @@
         }
 		
         checkLoginStatus();
+        var activeTab = localStorage.getItem('activeTab');
+        if (activeTab) {
+            $('.nav-pills a[href="' + activeTab + '"]').tab('show');
+        }
 		// --- START: 新增的移动端菜单切换逻辑 ---
 		$(document).on('click', '#mobile-menu-toggle', function(e) {
 			e.stopPropagation(); // 防止点击穿透
@@ -1993,6 +1997,7 @@ function loadComments() {
 	}
 	// --- END: 新增 - 保存轮播图顺序 ---
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      localStorage.setItem('activeTab', e.target.hash); // 记住当前点击的标签栏
       if(e.target.hash == "#comments-manager"){ loadComments(); }
       if(e.target.hash == "#carousel-manager"){ loadCarousel(); }
     });
