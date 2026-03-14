@@ -84,20 +84,14 @@
 			padding-bottom: 2px;
 		}
 		/* --- START: 图片管理画廊样式 --- */
-		.image-card {
-			border: 1px solid #ddd; border-radius: 4px; padding: 10px; margin: 10px;
-			width: calc(20% - 20px); background-color: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-			display: flex; flex-direction: column; position: relative;
-		}
-		@media (max-width: 992px) { .image-card { width: calc(25% - 20px); } }
-		@media (max-width: 768px) { .image-card { width: calc(33.33% - 20px); } }
-		@media (max-width: 576px) { .image-card { width: calc(50% - 20px); } }
-		.image-card-checkbox { position: absolute; top: 15px; left: 15px; z-index: 10; transform: scale(1.3); margin: 0; cursor: pointer; }
-		.image-node-badge { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 12px; z-index: 10; }
-		.image-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 4px; margin-bottom: 8px; border: 1px solid #f0f0f0; }
-		.image-url-text { font-size: 12px; color: #555; word-break: break-all; margin-bottom: 10px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 33px; }
-		.image-card-actions { display: flex; justify-content: space-between; gap: 4px; }
-		.image-card-actions button { flex: 1; padding: 2px 5px; font-size: 12px; }
+		.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; background: #f9f9f9; padding: 15px; border-radius: 4px; min-height: 200px; }
+		.img-card { background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 8px; position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+		.img-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 4px; border: 1px solid #f0f0f0; }
+		.img-badge { position: absolute; top: 10px; right: 10px; font-size: 11px; color: #fff; background: rgba(0,0,0,0.5); padding: 2px 5px; border-radius: 3px; pointer-events: none; z-index: 10; }
+		.admin-pagination { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; font-size: 14px; color: #555; }
+		.admin-pagination-right button { margin: 0 2px; padding: 5px 10px; border: 1px solid #ddd; background: #fff; border-radius: 3px; cursor: pointer; color: #333; }
+		.admin-pagination-right button.active { background: #337ab7; color: white; border-color: #337ab7; }
+		.admin-pagination-right button:disabled { opacity: 0.5; cursor: not-allowed; }
 		/* --- END: 图片管理画廊样式 --- */
 		/* --- END: Sortable.js 拖动样式 --- */
 		.upload-drop-zone {
@@ -537,37 +531,24 @@
 										    <button type="button" class="btn btn-primary" id="btn-upload-image" style="height: 34px;" onclick="uploadImage()">开始上传</button>
 										</div>
 									</div>
-									<div class="d-flex justify-content-between align-items-center mb-3" style="margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 10px; border-top: 1px solid #eee; padding-top: 15px;">
-										<div style="display: flex; gap: 10px; align-items: center;">
-											<button class="btn btn-default" onclick="loadImages(true)"><i class="fas fa-sync-alt"></i> 刷新</button>
-											<input type="text" id="image-search-input" class="form-control" placeholder="搜索图片名称或链接..." style="width: 220px;">
+									<div style="border-top: 1px solid #eee; padding-top: 20px;">
+										<div style="display: flex; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+											<button onclick="loadImages(true)" class="btn btn-default btn-sm" style="margin-bottom: 0;"><i class="fas fa-sync"></i> 刷新</button>
+											<input type="text" id="admin-search" class="form-control input-sm" placeholder="搜索文件名或标题..." style="width: 150px; margin-bottom: 0;">
+											<div style="border-left: 1px solid #ccc; height: 20px; margin: 0 5px;"></div>
+											<label style="margin: 0; display: flex; align-items: center; cursor: pointer; font-weight: normal;"><input type="checkbox" id="selectAllCheckbox" style="margin-right: 5px;">全选</label>
+											<button id="batchDeleteBtn" class="btn btn-danger btn-sm" style="margin-bottom: 0;"><i class="fas fa-trash"></i> 批量删除</button>
 										</div>
-										<div style="display: flex; gap: 15px; align-items: center;">
-											<label style="margin: 0; cursor: pointer;"><input type="checkbox" id="select-all-images"> 全选</label>
-											<button class="btn btn-danger" id="batch-delete-images-btn"><i class="fas fa-trash"></i> 批量删除</button>
-										</div>
-									</div>
-									
-									<div class="row" id="image-gallery-list" style="display: flex; flex-wrap: wrap; background: #f9f9f9; padding: 10px; border-radius: 4px; min-height: 200px;">
-									</div>
-									
-									<div id="image-pagination-controls" class="pagination-controls" style="display: none; padding: 15px 0;"> 
-										<div class="page-size-selector">
-											<select id="image-rows-per-page" class="form-control" style="width: auto; display: inline-block;">
-												<option value="10">10</option>
-												<option value="20" selected>20</option>
-												<option value="30">30</option>
-												<option value="50">50</option>
-												<option value="100">100</option>
-												<option value="200">200</option>
-											</select>
-											<label for="image-rows-per-page">条/页</label>
-										</div>
-										<div class="page-info" id="image-page-info">共 0 条数据，第 1 / 1 页</div>
-										<div class="page-buttons">
-											<button id="image-prev-page" class="btn btn-default" disabled="">« 上一页</button>
-											<span class="page-numbers" id="image-page-numbers"></span>
-											<button id="image-next-page" class="btn btn-default">下一页 »</button>
+										<div class="gallery-grid" id="gallery"></div>
+										<div id="admin-pagination-container" class="admin-pagination" style="display: none;">
+											<div class="admin-pagination-left">
+												<select id="image-rows-per-page" class="form-control input-sm" style="width: 60px; display: inline-block; padding: 0 5px; height: 30px;">
+													<option value="10">10</option><option value="20" selected>20</option><option value="30">30</option><option value="50">50</option><option value="100">100</option><option value="200">200</option>
+												</select>
+												<span style="margin-left: 10px;">条/页</span>
+											</div>
+											<div class="admin-pagination-center" id="image-page-info">共 0 条数据，第 1 / 1 页</div>
+											<div class="admin-pagination-right" id="image-page-numbers"></div>
 										</div>
 									</div>
 								</div>
@@ -2088,51 +2069,42 @@ function loadComments() {
 	let filteredImages = [];
 	let currentImagePage = 1;
 	let imagePageSize = 20;
+
 	function loadImages(forceRefresh = false) {
-		if (!forceRefresh && allImages.length > 0) {
-			renderImagesPage(currentImagePage, imagePageSize);
-			return;
-		}
-		$('#image-gallery-list').html('<p style="padding:15px;color:#666;"><i class="fas fa-spinner fa-spin"></i> 加载中...</p>');
+		if (!forceRefresh && allImages.length > 0) { renderImagesPage(currentImagePage, imagePageSize); return; }
+		$('#gallery').html('<p style="padding:15px;color:#666;"><i class="fas fa-spinner fa-spin"></i> 加载中...</p>');
 		$.getJSON("/admin/api/images", function(res) {
 			allImages = res || [];
 			filteredImages = allImages;
-			$('#image-search-input').val('');
+			$('#admin-search').val('');
 			renderImagesPage(1, imagePageSize);
-		}).fail(function(jqXHR) {
-			$('#image-gallery-list').html('<p style="padding:15px;color:red;">加载失败，请配置接口或检查数据库。</p>');
-		});
+		}).fail(function() { $('#gallery').html('<p style="padding:15px;color:red;">加载失败，请配置接口或检查数据库。</p>'); });
 	}
 
 	function renderImagesPage(page, size) {
-		currentImagePage = page;
-		imagePageSize = parseInt(size);
-		const container = $('#image-gallery-list').empty();
+		currentImagePage = page; imagePageSize = parseInt(size);
+		const container = $('#gallery').empty();
 		const start = (page - 1) * size;
 		const end = start + size;
 		const pageImages = filteredImages.slice(start, end);
 
-		if (pageImages.length === 0) {
-			container.html('<p style="padding:15px;">暂无图片</p>');
-			updateImagePagination();
-			return;
-		}
+		if (pageImages.length === 0) { container.html('<p style="padding:15px;">暂无图片</p>'); $('#admin-pagination-container').hide(); return; }
 
 		const html = pageImages.map(img => `
-			<div class="image-card" id="img-${img.id}">
-				<input type="checkbox" class="image-checkbox" data-id="${img.id}">
-				<span class="image-node-badge">${img.storage_node === 'tg' ? 'TG' : 'R2'}</span>
-				<img src="${img.url}" alt="${img.name}">
-				<div class="image-url-text" title="${img.url}">${img.url}</div>
-				<div class="btn-group-sm image-card-actions">
+			<div class="img-card" id="img-${img.id}">
+				<input type="checkbox" class="img-checkbox" data-id="${img.id}" style="position: absolute; top: 10px; left: 10px; z-index: 10; width: 16px; height: 16px; cursor: pointer;">
+				<span class="img-badge badge-${img.storage_node === 'tg' ? 'tg' : 'r2'}">${img.storage_node === 'tg' ? '<i class="fab fa-telegram-plane" style="margin-right:4px;"></i>TG' : 'R2'}</span>
+				<a href="${img.url}" target="_blank"><img src="${img.url}" loading="lazy"></a>
+				<div style="margin-top: 8px;">
+					<input type="text" class="form-control input-sm" value="${img.name}" readonly onclick="this.select()" style="margin-bottom: 5px; font-size: 12px; cursor: text;" title="${img.name}">
 					<button class="btn btn-default btn-xs" onclick="navigator.clipboard.writeText('${img.url}').then(()=>alert('链接已复制'))">复制</button>
-					<button class="btn btn-primary btn-xs" onclick="editImage('${img.id}')">编辑</button>
-					<button class="btn btn-danger btn-xs" onclick="deleteImage('${img.id}')">删除</button>
+					<button class="btn btn-warning btn-xs" onclick="editImage('${img.id}')">编辑</button>
+					<button class="btn btn-danger btn-xs pull-right" onclick="deleteImage('${img.id}')">删除</button>
 				</div>
 			</div>
 		`).join('');
 		container.html(html);
-		$('#select-all-images').prop('checked', false);
+		$('#selectAllCheckbox').prop('checked', false);
 		updateImagePagination();
 	}
 
@@ -2140,92 +2112,69 @@ function loadComments() {
 		const totalItems = filteredImages.length;
 		const totalPages = Math.ceil(totalItems / imagePageSize);
 		$('#image-page-info').text(`共 ${totalItems} 条数据，第 ${currentImagePage} / ${totalPages || 1} 页`);
-		$('#image-prev-page').prop('disabled', currentImagePage === 1);
-		$('#image-next-page').prop('disabled', currentImagePage === totalPages || totalPages === 0);
-		createPaginationButtons('#image-page-numbers', currentImagePage, totalPages);
-		$('#image-pagination-controls').show();
+		
+		let btns = `<button ${currentImagePage === 1 ? 'disabled' : ''} onclick="changeAdminPage(${currentImagePage - 1})">« 上一页</button>`;
+		let startPage = Math.max(1, currentImagePage - 2);
+		let endPage = Math.min(totalPages, startPage + 4);
+		if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
+		for (let i = startPage; i <= endPage; i++) {
+			btns += `<button class="${i === currentImagePage ? 'active' : ''}" onclick="changeAdminPage(${i})">${i}</button>`;
+		}
+		btns += `<button ${currentImagePage === totalPages || totalPages === 0 ? 'disabled' : ''} onclick="changeAdminPage(${currentImagePage + 1})">下一页 »</button>`;
+		$('#image-page-numbers').html(btns);
+		$('#admin-pagination-container').show();
 	}
 
-	// 搜索、全选与批量删除事件
-	$(document).on('keyup', '#image-search-input', function() {
+	window.changeAdminPage = function(page) {
+		if (page < 1 || page > Math.ceil(filteredImages.length / imagePageSize)) return;
+		renderImagesPage(page, imagePageSize);
+	}
+
+	$(document).on('keyup', '#admin-search', function() {
 		const term = $(this).val().toLowerCase();
 		filteredImages = term ? allImages.filter(img => (img.name && img.name.toLowerCase().includes(term)) || (img.url && img.url.toLowerCase().includes(term))) : allImages;
 		renderImagesPage(1, imagePageSize);
 	});
+	$(document).on('change', '#selectAllCheckbox', function() { $('.img-checkbox').prop('checked', $(this).prop('checked')); });
+	$(document).on('change', '#image-rows-per-page', function() { renderImagesPage(1, $(this).val()); });
 
-	$(document).on('change', '#select-all-images', function() {
-		$('.image-checkbox').prop('checked', $(this).prop('checked'));
-	});
-
-	$(document).on('click', '#batch-delete-images-btn', async function() {
-		const $checked = $('.image-checkbox:checked');
+	$(document).on('click', '#batchDeleteBtn', async function() {
+		const $checked = $('.img-checkbox:checked');
 		if ($checked.length === 0) return alert('请先勾选需要删除的图片');
 		if (!confirm(`确定要删除选中的 ${$checked.length} 张图片吗？`)) return;
-		
 		$(this).prop('disabled', true).text('删除中...');
 		const promises = [];
 		$checked.each(function() {
 			const id = $(this).data('id');
 			promises.push($.ajax({ url: '/admin/api/images/' + id, type: 'DELETE' }).then(() => id).catch(() => null));
 		});
-		
 		const results = await Promise.allSettled(promises);
 		let success = 0;
 		results.forEach(res => { if (res.status === 'fulfilled' && res.value) success++; });
-		
 		alert(`批量删除完成：\n成功 ${success} 张\n失败 ${results.length - success} 张`);
 		$(this).prop('disabled', false).html('<i class="fas fa-trash"></i> 批量删除');
-		loadImages(true); // 强制刷新
-	});
-
-	// 图片分页按钮事件
-	$(document).on('change', '#image-rows-per-page', function() { renderImagesPage(1, $(this).val()); });
-	$(document).on('click', '#image-prev-page', function() { if (currentImagePage > 1) renderImagesPage(currentImagePage - 1, imagePageSize); });
-	$(document).on('click', '#image-next-page', function() {
-		if (currentImagePage < Math.ceil(filteredImages.length / imagePageSize)) renderImagesPage(currentImagePage + 1, imagePageSize);
-	});
-	$(document).on('click', '#image-pagination-controls .page-numbers button', function() {
-		if ($(this).hasClass('ellipsis')) return;
-		renderImagesPage(parseInt($(this).data('page')), imagePageSize);
+		loadImages(true);
 	});
 
 	function editImage(id) {
 		const img = allImages.find(i => i.id === id);
 		if (!img) return;
-		
 		const newName = prompt("请输入新的图片名称（建议保留后缀）：", img.name);
-		if (newName === null || newName.trim() === "") return;
-		if (newName.trim() === img.name) return; // 没有修改
-		
-		$.ajax({
-			url: '/admin/api/images/' + id,
-			type: 'PUT',
-			contentType: 'application/json',
-			data: JSON.stringify({ name: newName.trim() }),
-			success: function() {
-				alert("图片名称修改成功！");
-				img.name = newName.trim(); // 更新本地数据
-				// 重新渲染当前页
-				renderImagesPage(currentImagePage, imagePageSize);
-			},
-			error: function(xhr) {
-				alert("修改失败：" + (xhr.responseText || "未知错误"));
-			}
+		if (!newName || newName.trim() === "" || newName.trim() === img.name) return;
+		$.ajax({ url: '/admin/api/images/' + id, type: 'PUT', contentType: 'application/json', data: JSON.stringify({ name: newName.trim() }),
+			success: function() { alert("修改成功！"); img.name = newName.trim(); renderImagesPage(currentImagePage, imagePageSize); },
+			error: function(xhr) { alert("修改失败：" + (xhr.responseText || "未知错误")); }
 		});
 	}
 
 	function deleteImage(id) {
 		if (confirm("确定删除吗？")) {
-			$.ajax({ 
-				url: '/admin/api/images/' + id, 
-				type: 'DELETE', 
-				success: function() { 
-					$('#img-' + id).remove(); 
-					allImages = allImages.filter(img => img.id !== id);
-					filteredImages = filteredImages.filter(img => img.id !== id);
-					updateImagePagination();
-				} 
-			}); 
+			$.ajax({ url: '/admin/api/images/' + id, type: 'DELETE', success: function() { 
+				$('#img-' + id).remove(); 
+				allImages = allImages.filter(img => img.id !== id);
+				filteredImages = filteredImages.filter(img => img.id !== id);
+				updateImagePagination();
+			}}); 
 		}
 	}
 
