@@ -14,7 +14,7 @@
     <link rel='stylesheet' href='{{ &OPT.theme_github_path }}xyrj/files/noto+serif.css' type='text/css' media='all' />
 	<link rel='stylesheet' href='{{ &OPT.theme_github_path }}xyrj/tools/style.css'>
 	<link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="/atom.xml">
-	<link rel="shortcut icon" href="{{& OPT.theme_github_path}}xyrj/files/xyrj.png" type="image/x-icon">
+	<link rel="shortcut icon" href="{{ #OPT.favicon }}{{ &OPT.favicon }}{{ /OPT.favicon }}{{ ^OPT.favicon }}{{& OPT.theme_github_path}}xyrj/files/xyrj.png{{ /OPT.favicon }}" type="image/x-icon">
 	{{& OPT.codeBeforHead}}
     
     </head>
@@ -37,7 +37,7 @@
                 <div class="close-menu-btn" id="close-menu-btn">&times;</div>
 
                 <div class="mobile-nav-header">
-                    <img src="{{ &OPT.theme_github_path }}xyrj/files/mobile-header.svg" alt="导航背景" class="mobile-nav-header-image">
+                    <img src="{{ &OPT.theme_github_path }}xyrj/files/mobile-header.webp" alt="导航背景" class="mobile-nav-header-image">
                 </div>
                 <ul>
                     {{ #OPT.widgetMenuList }}
