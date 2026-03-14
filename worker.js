@@ -328,7 +328,11 @@ async function handleRequest({ request, env, ctx }) {
 						const activeNode = configs["active_storage_node"] || 'tg';
 						const fileExt = file.name.split('.').pop().toLowerCase();
 						const fileArrayBuffer = await file.arrayBuffer();
-						const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
+						const existImg = await env.db.prepare("SELECT id FROM images WHERE name = ?").bind(file.name).first();
+						if (existImg) {
+							return new Response("有相同图片名，请重新输入名称！", { status: 400 });
+						}
+						const fileName = file.name;
 						let finalUrl = '';
 
 						if (activeNode === 'tg') {
