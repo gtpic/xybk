@@ -531,11 +531,14 @@
 										<h4>将图片拖拽到此处，或点击下方按钮选择</h4>
 										<p class="text-muted" id="file-name-display">支持 JPG, PNG, GIF, WEBP 等格式</p>
 										<input type="file" id="imageFileInput" accept="image/*" style="display: none;" onchange="updateFileNameDisplay()">
-										
-										<div class="form-group" style="display: flex; gap: 10px; margin-top: 25px; margin-bottom: 0;">
-											<button type="button" class="btn btn-info" onclick="$('#imageFileInput').click()"><i class="fas fa-image"></i> 选择图片</button>
-											<input type="text" id="customFileName" class="form-control" placeholder="自定义图片名称（可选，留空则使用原名）" style="flex-grow: 1;">
-											<button type="button" class="btn btn-primary" id="btn-upload-image" onclick="uploadImage()"><i class="fas fa-upload"></i> 开始上传</button>
+										<div class="input-group" style="margin-top: 25px; margin-bottom: 0; width: 100%;">
+											<span class="input-group-btn">
+												<button class="btn btn-info" type="button" onclick="$('#imageFileInput').click()"><i class="fas fa-image"></i> 选择图片</button>
+											</span>
+											<input type="text" id="customFileName" class="form-control" placeholder="自定义图片名称（可选，留空则使用原名）">
+											<span class="input-group-btn">
+												<button class="btn btn-primary" type="button" id="btn-upload-image" onclick="uploadImage()"><i class="fas fa-upload"></i> 开始上传</button>
+											</span>
 										</div>
 									</div>
 									<div class="row" id="image-gallery-list" style="display: flex; flex-wrap: wrap; background: #f9f9f9; padding: 10px; border-radius: 4px; min-height: 200px;">
