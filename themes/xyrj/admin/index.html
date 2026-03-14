@@ -85,19 +85,19 @@
 		}
 		/* --- START: 图片管理画廊样式 --- */
 		.image-card {
-			border: 1px solid #ddd; border-radius: 4px; padding: 8px; margin: 10px;
+			border: 1px solid #ddd; border-radius: 4px; padding: 10px; margin: 10px;
 			width: calc(20% - 20px); background-color: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-			display: flex; flex-direction: column; justify-content: space-between;
+			display: flex; flex-direction: column; position: relative;
 		}
 		@media (max-width: 992px) { .image-card { width: calc(25% - 20px); } }
 		@media (max-width: 768px) { .image-card { width: calc(33.33% - 20px); } }
 		@media (max-width: 576px) { .image-card { width: calc(50% - 20px); } }
-		.image-card img {
-			max-width: 100%; height: 140px; object-fit: cover; border-radius: 4px;
-			margin-bottom: 10px; border: 1px solid #f0f0f0;
-		}
-		.image-card .image-info { font-size: 12px; color: #777; word-break: break-all; margin-bottom: 10px; line-height: 1.4; }
-		.image-card .btn-group-sm { display: flex; justify-content: space-between; }
+		.image-card-checkbox { position: absolute; top: 15px; left: 15px; z-index: 10; transform: scale(1.3); margin: 0; cursor: pointer; }
+		.image-node-badge { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 12px; z-index: 10; }
+		.image-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 4px; margin-bottom: 8px; border: 1px solid #f0f0f0; }
+		.image-url-text { font-size: 12px; color: #555; word-break: break-all; margin-bottom: 10px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 33px; }
+		.image-card-actions { display: flex; justify-content: space-between; gap: 4px; }
+		.image-card-actions button { flex: 1; padding: 2px 5px; font-size: 12px; }
 		/* --- END: 图片管理画廊样式 --- */
 		/* --- END: Sortable.js 拖动样式 --- */
 		.upload-drop-zone {
@@ -161,7 +161,7 @@
 						<span>{{ &OPT.siteName }}</span>
 					{{ /OPT.siteName }}
 					{{ ^OPT.siteName }}
-						<span>Blog后台</span>
+						<span>BLOG后台</span>
 					{{ /OPT.siteName }}
 				{{ /OPT.logo }}
 			</a>
@@ -173,7 +173,7 @@
 	<div class="admin-overlay"></div>
 	<div class="admin-sidebar">
 		<div class="sidebar-header">
-			<a href="/admin" >Blog后台</a>
+			<a href="/admin" ></a>
 		</div>
 		<ul class="nav nav-pills nav-stacked">
 			<li class="active"><a data-toggle="tab" href="#list"><i class="fas fa-fw fa-list-alt"></i> 我的文章</a></li>
@@ -537,8 +537,39 @@
 										    <button type="button" class="btn btn-primary" id="btn-upload-image" style="height: 34px;" onclick="uploadImage()">开始上传</button>
 										</div>
 									</div>
-									<div class="row" id="image-gallery-list" style="display: flex; flex-wrap: wrap; background: #f9f9f9; padding: 10px; border-radius: 4px; min-height: 200px;">
+									<div class="d-flex justify-content-between align-items-center mb-3" style="margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 10px; border-top: 1px solid #eee; padding-top: 15px;">
+										<div style="display: flex; gap: 10px; align-items: center;">
+											<button class="btn btn-default" onclick="loadImages(true)"><i class="fas fa-sync-alt"></i> 刷新</button>
+											<input type="text" id="image-search-input" class="form-control" placeholder="搜索图片名称或链接..." style="width: 220px;">
 										</div>
+										<div style="display: flex; gap: 15px; align-items: center;">
+											<label style="margin: 0; cursor: pointer;"><input type="checkbox" id="select-all-images"> 全选</label>
+											<button class="btn btn-danger" id="batch-delete-images-btn"><i class="fas fa-trash"></i> 批量删除</button>
+										</div>
+									</div>
+									
+									<div class="row" id="image-gallery-list" style="display: flex; flex-wrap: wrap; background: #f9f9f9; padding: 10px; border-radius: 4px; min-height: 200px;">
+									</div>
+									
+									<div id="image-pagination-controls" class="pagination-controls" style="display: none; padding: 15px 0;"> 
+										<div class="page-size-selector">
+											<select id="image-rows-per-page" class="form-control" style="width: auto; display: inline-block;">
+												<option value="10">10</option>
+												<option value="20" selected>20</option>
+												<option value="30">30</option>
+												<option value="50">50</option>
+												<option value="100">100</option>
+												<option value="200">200</option>
+											</select>
+											<label for="image-rows-per-page">条/页</label>
+										</div>
+										<div class="page-info" id="image-page-info">共 0 条数据，第 1 / 1 页</div>
+										<div class="page-buttons">
+											<button id="image-prev-page" class="btn btn-default" disabled="">« 上一页</button>
+											<span class="page-numbers" id="image-page-numbers"></span>
+											<button id="image-next-page" class="btn btn-default">下一页 »</button>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -2053,26 +2084,134 @@ function loadComments() {
 		$.ajax({ type: "POST", dataType: "json", contentType: "application/json; charset=utf-8", url: "/admin/saveConfig/", data: JSON.stringify(configData), success: function () { alert("图片存储设置保存成功！"); }, error: function() { alert('保存失败'); } });
 	}
 
-	function loadImages() {
-		$('#image-gallery-list').html('<p style="padding:15px;color:#666;">加载中...</p>');
+	let allImages = [];
+	let filteredImages = [];
+	let currentImagePage = 1;
+	let imagePageSize = 20;
+	function loadImages(forceRefresh = false) {
+		if (!forceRefresh && allImages.length > 0) {
+			renderImagesPage(currentImagePage, imagePageSize);
+			return;
+		}
+		$('#image-gallery-list').html('<p style="padding:15px;color:#666;"><i class="fas fa-spinner fa-spin"></i> 加载中...</p>');
 		$.getJSON("/admin/api/images", function(res) {
-			var html = res.length > 0 ? res.map(img => `<div class="image-card" id="img-${img.id}">
-				<img src="${img.url}" alt="img"><div class="image-info"><strong>${img.name}</strong><br>${img.upload_date}</div>
-				<div class="btn-group-sm"><button class="btn btn-default btn-xs" onclick="navigator.clipboard.writeText('${img.url}').then(()=>alert('链接已复制'))">复制链接</button><button class="btn btn-danger btn-xs" onclick="deleteImage('${img.id}')">删除</button></div></div>`).join('') : '<p style="padding:15px;">暂无图片</p>';
-			$('#image-gallery-list').html(html);
-		}).fail(function(jqXHR) { 
-			var errMsg = "加载失败，请配置 Worker 接口";
-			if (jqXHR.responseJSON && jqXHR.responseJSON.error) errMsg += " | 数据库错误: " + jqXHR.responseJSON.error;
-			else if (jqXHR.responseText) errMsg += " | 详情: " + jqXHR.responseText.substring(0, 100);
-			$('#image-gallery-list').html('<p style="padding:15px;color:red;">' + errMsg + '<br><br><b>提示:</b> 请确保 D1 数据库已创建 images 表。</p>'); 
+			allImages = res || [];
+			filteredImages = allImages;
+			$('#image-search-input').val('');
+			renderImagesPage(1, imagePageSize);
+		}).fail(function(jqXHR) {
+			$('#image-gallery-list').html('<p style="padding:15px;color:red;">加载失败，请配置接口或检查数据库。</p>');
 		});
+	}
+
+	function renderImagesPage(page, size) {
+		currentImagePage = page;
+		imagePageSize = parseInt(size);
+		const container = $('#image-gallery-list').empty();
+		const start = (page - 1) * size;
+		const end = start + size;
+		const pageImages = filteredImages.slice(start, end);
+
+		if (pageImages.length === 0) {
+			container.html('<p style="padding:15px;">暂无图片</p>');
+			updateImagePagination();
+			return;
+		}
+
+		const html = pageImages.map(img => `
+			<div class="image-card" id="img-${img.id}">
+				<input type="checkbox" class="image-checkbox" data-id="${img.id}">
+				<span class="image-node-badge">${img.storage_node === 'tg' ? 'TG' : 'R2'}</span>
+				<img src="${img.url}" alt="${img.name}">
+				<div class="image-url-text" title="${img.url}">${img.url}</div>
+				<div class="btn-group-sm image-card-actions">
+					<button class="btn btn-default btn-xs" onclick="navigator.clipboard.writeText('${img.url}').then(()=>alert('链接已复制'))">复制</button>
+					<button class="btn btn-primary btn-xs" onclick="editImage('${img.id}')">编辑</button>
+					<button class="btn btn-danger btn-xs" onclick="deleteImage('${img.id}')">删除</button>
+				</div>
+			</div>
+		`).join('');
+		container.html(html);
+		$('#select-all-images').prop('checked', false);
+		updateImagePagination();
+	}
+
+	function updateImagePagination() {
+		const totalItems = filteredImages.length;
+		const totalPages = Math.ceil(totalItems / imagePageSize);
+		$('#image-page-info').text(`共 ${totalItems} 条数据，第 ${currentImagePage} / ${totalPages || 1} 页`);
+		$('#image-prev-page').prop('disabled', currentImagePage === 1);
+		$('#image-next-page').prop('disabled', currentImagePage === totalPages || totalPages === 0);
+		createPaginationButtons('#image-page-numbers', currentImagePage, totalPages);
+		$('#image-pagination-controls').show();
+	}
+
+	// 搜索、全选与批量删除事件
+	$(document).on('keyup', '#image-search-input', function() {
+		const term = $(this).val().toLowerCase();
+		filteredImages = term ? allImages.filter(img => (img.name && img.name.toLowerCase().includes(term)) || (img.url && img.url.toLowerCase().includes(term))) : allImages;
+		renderImagesPage(1, imagePageSize);
+	});
+
+	$(document).on('change', '#select-all-images', function() {
+		$('.image-checkbox').prop('checked', $(this).prop('checked'));
+	});
+
+	$(document).on('click', '#batch-delete-images-btn', async function() {
+		const $checked = $('.image-checkbox:checked');
+		if ($checked.length === 0) return alert('请先勾选需要删除的图片');
+		if (!confirm(`确定要删除选中的 ${$checked.length} 张图片吗？`)) return;
+		
+		$(this).prop('disabled', true).text('删除中...');
+		const promises = [];
+		$checked.each(function() {
+			const id = $(this).data('id');
+			promises.push($.ajax({ url: '/admin/api/images/' + id, type: 'DELETE' }).then(() => id).catch(() => null));
+		});
+		
+		const results = await Promise.allSettled(promises);
+		let success = 0;
+		results.forEach(res => { if (res.status === 'fulfilled' && res.value) success++; });
+		
+		alert(`批量删除完成：\n成功 ${success} 张\n失败 ${results.length - success} 张`);
+		$(this).prop('disabled', false).html('<i class="fas fa-trash"></i> 批量删除');
+		loadImages(true); // 强制刷新
+	});
+
+	// 图片分页按钮事件
+	$(document).on('change', '#image-rows-per-page', function() { renderImagesPage(1, $(this).val()); });
+	$(document).on('click', '#image-prev-page', function() { if (currentImagePage > 1) renderImagesPage(currentImagePage - 1, imagePageSize); });
+	$(document).on('click', '#image-next-page', function() {
+		if (currentImagePage < Math.ceil(filteredImages.length / imagePageSize)) renderImagesPage(currentImagePage + 1, imagePageSize);
+	});
+	$(document).on('click', '#image-pagination-controls .page-numbers button', function() {
+		if ($(this).hasClass('ellipsis')) return;
+		renderImagesPage(parseInt($(this).data('page')), imagePageSize);
+	});
+
+	function editImage(id) {
+		alert("后端暂未提供修改图片名称/链接的接口，此按钮仅作预留展示。");
+	}
+
+	function deleteImage(id) {
+		if (confirm("确定删除吗？")) {
+			$.ajax({ 
+				url: '/admin/api/images/' + id, 
+				type: 'DELETE', 
+				success: function() { 
+					$('#img-' + id).remove(); 
+					allImages = allImages.filter(img => img.id !== id);
+					filteredImages = filteredImages.filter(img => img.id !== id);
+					updateImagePagination();
+				} 
+			}); 
+		}
 	}
 
 	function updateFileNameDisplay() {
 		var file = $('#imageFileInput')[0].files[0];
 		if (file) {
 			$('#file-name-display').text('已选择: ' + file.name);
-			// 如果没有手动输入文件名，则自动填入不带后缀的原文件名
 			if(!$('#customFileName').val()) {
 				var nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
 				$('#customFileName').val(nameWithoutExt);
@@ -2083,49 +2222,36 @@ function loadComments() {
 		}
 	}
 
-	// 拖拽事件监听
 	$(document).on('dragover', '#drop-zone', function(e) { e.preventDefault(); e.stopPropagation(); $(this).addClass('dragover'); });
 	$(document).on('dragleave', '#drop-zone', function(e) { e.preventDefault(); e.stopPropagation(); $(this).removeClass('dragover'); });
 	$(document).on('drop', '#drop-zone', function(e) {
 		e.preventDefault(); e.stopPropagation(); $(this).removeClass('dragover');
 		var files = e.originalEvent.dataTransfer.files;
-		if (files.length > 0) {
-			$('#imageFileInput')[0].files = files;
-			updateFileNameDisplay();
-		}
+		if (files.length > 0) { $('#imageFileInput')[0].files = files; updateFileNameDisplay(); }
 	});
 
 	function uploadImage() {
 		if ($('#imageFileInput')[0].files.length === 0) return alert("请先选择图片！");
-		
 		var file = $('#imageFileInput')[0].files[0];
 		var customName = $('#customFileName').val().trim();
 		var finalName = file.name;
-		
-		// 处理自定义文件名，保留原后缀
 		if (customName) {
 			var ext = file.name.substring(file.name.lastIndexOf('.'));
 			finalName = customName.endsWith(ext) ? customName : customName + ext;
 		}
-
 		var formData = new FormData(); 
-		formData.append("file", file, finalName); // 使用第三个参数覆盖文件名
-		
+		formData.append("file", file, finalName);
 		$('#btn-upload-image').prop('disabled', true).text('上传中...');
 		$.ajax({ url: '/admin/api/upload_image', type: 'POST', data: formData, processData: false, contentType: false,
 			success: function() { 
 				alert("上传成功！"); 
-				$('#imageFileInput').val(''); 
-				$('#customFileName').val('');
+				$('#imageFileInput').val(''); $('#customFileName').val('');
 				$('#file-name-display').text('支持 JPG, PNG, GIF, WEBP 等格式');
-				loadImages(); 
+				loadImages(true); 
 			},
 			error: function() { alert("上传失败，请检查设置。"); },
 			complete: function() { $('#btn-upload-image').prop('disabled', false).html('<i class="fas fa-upload"></i> 开始上传'); }
 		});
-	}
-	function deleteImage(id) {
-		if (confirm("确定删除吗？")) { $.ajax({ url: '/admin/api/images/' + id, type: 'DELETE', success: function() { $('#img-' + id).remove(); } }); }
 	}
 
 	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) { if(e.target.hash == "#image-manager") loadImages(); });
