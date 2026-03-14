@@ -100,6 +100,12 @@
 		.image-card .btn-group-sm { display: flex; justify-content: space-between; }
 		/* --- END: 图片管理画廊样式 --- */
 		/* --- END: Sortable.js 拖动样式 --- */
+		.upload-drop-zone {
+			border: 2px dashed #ccc; border-radius: 8px; padding: 30px; text-align: center;
+			background: #f8f9fa; cursor: pointer; transition: all 0.3s ease; margin-bottom: 15px;
+		}
+		.upload-drop-zone.dragover { border-color: #337ab7; background: #e6f2ff; }
+		.upload-drop-zone i { font-size: 3em; color: #aaa; margin-bottom: 10px; }
 		#addNewForm .form-group,
 		#btn_saveAddNew {
 			margin-bottom: 5px;
@@ -520,9 +526,15 @@
 						<div id="image-upload-tab" class="tab-pane fade in active">
 							<div class="panel panel-default">
 								<div class="panel-body">
+									<div id="drop-zone" class="upload-drop-zone" onclick="$('#imageFileInput').click()">
+										<i class="fas fa-cloud-upload-alt"></i>
+										<h4>点击或将图片拖拽到此处上传</h4>
+										<p class="text-muted" id="file-name-display">支持 JPG, PNG, GIF, WEBP 等格式</p>
+										<input type="file" id="imageFileInput" accept="image/*" style="display: none;" onchange="updateFileNameDisplay()">
+									</div>
 									<div class="form-group" style="display: flex; gap: 10px; margin-bottom: 20px;">
-										<input type="file" id="imageFileInput" accept="image/*" class="form-control" style="width: auto; flex-grow: 1;">
-										<button class="btn btn-primary" id="btn-upload-image" onclick="uploadImage()"><i class="fas fa-upload"></i> 上传图片</button>
+										<input type="text" id="customFileName" class="form-control" placeholder="自定义图片名称（可选，留空则使用原名）" style="flex-grow: 1;">
+										<button class="btn btn-primary" id="btn-upload-image" onclick="uploadImage()"><i class="fas fa-upload"></i> 开始上传</button>
 									</div>
 									<div class="row" id="image-gallery-list" style="display: flex; flex-wrap: wrap; background: #f9f9f9; padding: 10px; border-radius: 4px; min-height: 200px;">
 										</div>
@@ -2055,17 +2067,62 @@ function loadComments() {
 		});
 	}
 
-	function uploadImage() {
-		if ($('#imageFileInput')[0].files.length === 0) return alert("请先选择图片！");
-		var formData = new FormData(); formData.append("file", $('#imageFileInput')[0].files[0]);
-		$('#btn-upload-image').prop('disabled', true).text('上传中...');
-		$.ajax({ url: '/admin/api/upload_image', type: 'POST', data: formData, processData: false, contentType: false,
-			success: function() { alert("上传成功！"); $('#imageFileInput').val(''); loadImages(); },
-			error: function() { alert("上传失败，请检查设置。"); },
-			complete: function() { $('#btn-upload-image').prop('disabled', false).html('<i class="fas fa-upload"></i> 上传图片'); }
-		});
+	function updateFileNameDisplay() {
+		var file = $('#imageFileInput')[0].files[0];
+		if (file) {
+			$('#file-name-display').text('已选择: ' + file.name);
+			// 如果没有手动输入文件名，则自动填入不带后缀的原文件名
+			if(!$('#customFileName').val()) {
+				var nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+				$('#customFileName').val(nameWithoutExt);
+			}
+		} else {
+			$('#file-name-display').text('支持 JPG, PNG, GIF, WEBP 等格式');
+			$('#customFileName').val('');
+		}
 	}
 
+	// 拖拽事件监听
+	$(document).on('dragover', '#drop-zone', function(e) { e.preventDefault(); e.stopPropagation(); $(this).addClass('dragover'); });
+	$(document).on('dragleave', '#drop-zone', function(e) { e.preventDefault(); e.stopPropagation(); $(this).removeClass('dragover'); });
+	$(document).on('drop', '#drop-zone', function(e) {
+		e.preventDefault(); e.stopPropagation(); $(this).removeClass('dragover');
+		var files = e.originalEvent.dataTransfer.files;
+		if (files.length > 0) {
+			$('#imageFileInput')[0].files = files;
+			updateFileNameDisplay();
+		}
+	});
+
+	function uploadImage() {
+		if ($('#imageFileInput')[0].files.length === 0) return alert("请先选择图片！");
+		
+		var file = $('#imageFileInput')[0].files[0];
+		var customName = $('#customFileName').val().trim();
+		var finalName = file.name;
+		
+		// 处理自定义文件名，保留原后缀
+		if (customName) {
+			var ext = file.name.substring(file.name.lastIndexOf('.'));
+			finalName = customName.endsWith(ext) ? customName : customName + ext;
+		}
+
+		var formData = new FormData(); 
+		formData.append("file", file, finalName); // 使用第三个参数覆盖文件名
+		
+		$('#btn-upload-image').prop('disabled', true).text('上传中...');
+		$.ajax({ url: '/admin/api/upload_image', type: 'POST', data: formData, processData: false, contentType: false,
+			success: function() { 
+				alert("上传成功！"); 
+				$('#imageFileInput').val(''); 
+				$('#customFileName').val('');
+				$('#file-name-display').text('支持 JPG, PNG, GIF, WEBP 等格式');
+				loadImages(); 
+			},
+			error: function() { alert("上传失败，请检查设置。"); },
+			complete: function() { $('#btn-upload-image').prop('disabled', false).html('<i class="fas fa-upload"></i> 开始上传'); }
+		});
+	}
 	function deleteImage(id) {
 		if (confirm("确定删除吗？")) { $.ajax({ url: '/admin/api/images/' + id, type: 'DELETE', success: function() { $('#img-' + id).remove(); } }); }
 	}
