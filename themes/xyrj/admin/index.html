@@ -2009,7 +2009,7 @@ function loadComments() {
 	}
 	// --- END: 新增 - 保存轮播图顺序 ---
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-      localStorage.setItem('activeTab', e.target.hash); // 记住当前点击的标签栏
+      localStorage.setItem('activeTab', e.target.hash); 
       if(e.target.hash == "#comments-manager"){ loadComments(); }
       if(e.target.hash == "#carousel-manager"){ loadCarousel(); }
     });
