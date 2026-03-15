@@ -172,7 +172,13 @@ async function handleRequest({ request, env, ctx }) {
                         if (item.name === 'category[]') article[item.name].push(item.value);
                         else article[item.name] = item.value;
                     });
-					const id = Date.now().toString(36) + Math.random().toString(36).substring(2, 6);
+					const maxIdRow = await env.db.prepare("SELECT id FROM articles ORDER BY CAST(id AS INTEGER) DESC LIMIT 1").first();
+					let nextIdNum = 1;
+					if (maxIdRow && maxIdRow.id) {
+						const parsed = parseInt(maxIdRow.id, 10);
+						if (!isNaN(parsed) && parsed > 0) nextIdNum = parsed + 1;
+					}
+					const id = String(nextIdNum).padStart(3, '0');
                     const contentText = (article.content || "").replace(/<[^>]+>/g, "").substring(0, 180);
                     const firstImg = article.img || getFirstImageUrl(article.content) || `${cdn}/${theme}/files/noimage.jpg`;
 
@@ -740,6 +746,7 @@ async function getIndexData(request, env) {
 }
 
 async function getArticleData(request, id, env, ctx) {
+	id = id !== undefined ? String(id) : "";
 	const articleSingle = await env.db.prepare("SELECT * FROM articles WHERE id = ?").bind(id).first();
 	if (!articleSingle) return new Response("Article not found", { status: 404 });
 
@@ -765,7 +772,8 @@ async function getArticleData(request, id, env, ctx) {
 
 	articleSingle.tags = articleSingle.tags ? articleSingle.tags.split(',').filter(tag => tag.trim() !== '') : [];
 	articleSingle.url = `/article/${articleSingle.id}/${articleSingle.link}`;
-	articleSingle.createDate10 = articleSingle.createDate.substring(0, 10);
+	const safeDate = articleSingle.createDate !== undefined && articleSingle.createDate !== null ? String(articleSingle.createDate) : "";
+	articleSingle.createDate10 = safeDate.length >= 10 ? safeDate.substring(0, 10) : safeDate;
     articleSingle['category[]'] = JSON.parse(articleSingle.category || '[]');
 
     const configs = await getConfigs(env);
@@ -775,11 +783,11 @@ async function getArticleData(request, id, env, ctx) {
 	let data = { articleSingle: articleSingle };
 	
     // D1 获取上一篇和下一篇
-    const prev = await env.db.prepare("SELECT id, title, link, createDate, firstImageUrl FROM articles WHERE isHidden = 0 AND createDate > ? ORDER BY createDate ASC LIMIT 1").bind(articleSingle.createDate).first();
-    const next = await env.db.prepare("SELECT id, title, link, createDate, firstImageUrl FROM articles WHERE isHidden = 0 AND createDate < ? ORDER BY createDate DESC LIMIT 1").bind(articleSingle.createDate).first();
+    const prev = await env.db.prepare("SELECT id, title, link, createDate, firstImageUrl FROM articles WHERE isHidden = 0 AND createDate > ? ORDER BY createDate ASC LIMIT 1").bind(safeDate).first();
+    const next = await env.db.prepare("SELECT id, title, link, createDate, firstImageUrl FROM articles WHERE isHidden = 0 AND createDate < ? ORDER BY createDate DESC LIMIT 1").bind(safeDate).first();
 	
-	if (prev) data["articleNewer"] = { ...prev, url: `/article/${prev.id}/${prev.link}`, img: prev.firstImageUrl, createDate10: prev.createDate.substring(0, 10) };
-	if (next) data["articleOlder"] = { ...next, url: `/article/${next.id}/${next.link}`, img: next.firstImageUrl, createDate10: next.createDate.substring(0, 10) };
+	if (prev) data["articleNewer"] = { ...prev, url: `/article/${prev.id}/${prev.link}`, img: prev.firstImageUrl, createDate10: prev.createDate ? String(prev.createDate).substring(0, 10) : "" };
+	if (next) data["articleOlder"] = { ...next, url: `/article/${next.id}/${next.link}`, img: next.firstImageUrl, createDate10: next.createDate ? String(next.createDate).substring(0, 10) : "" };
 
     const { results: tagRows } = await env.db.prepare("SELECT tags FROM articles WHERE isHidden = 0 AND tags IS NOT NULL AND tags != ''").all();
 	const allTags = new Set();
