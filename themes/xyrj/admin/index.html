@@ -167,7 +167,7 @@
 	<div class="admin-overlay"></div>
 	<div class="admin-sidebar">
 		<div class="sidebar-header">
-			<a href="/admin" ></a>
+			<a href="/admin" >BLOG后台</a>
 		</div>
 		<ul class="nav nav-pills nav-stacked">
 			<li class="active"><a data-toggle="tab" href="#list"><i class="fas fa-fw fa-list-alt"></i> 我的文章</a></li>
@@ -2090,19 +2090,23 @@ function loadComments() {
 
 		if (pageImages.length === 0) { container.html('<p style="padding:15px;">暂无图片</p>'); $('#admin-pagination-container').hide(); return; }
 
-		const html = pageImages.map(img => `
+		const html = pageImages.map(img => {
+			// 动态获取当前域名并拼接成完整 URL
+			const fullUrl = window.location.origin + img.url;
+			return `
 			<div class="img-card" id="img-${img.id}">
 				<input type="checkbox" class="img-checkbox" data-id="${img.id}" style="position: absolute; top: 10px; left: 10px; z-index: 10; width: 16px; height: 16px; cursor: pointer;">
 				<span class="img-badge badge-${img.storage_node === 'tg' ? 'tg' : 'r2'}">${img.storage_node === 'tg' ? '<i class="fab fa-telegram-plane" style="margin-right:4px;"></i>TG' : 'R2'}</span>
-				<a href="${img.url}" target="_blank"><img src="${img.url}" loading="lazy"></a>
+				<a href="${fullUrl}" target="_blank"><img src="${fullUrl}" loading="lazy"></a>
 				<div style="margin-top: 8px;">
-					<input type="text" class="form-control input-sm" value="${img.name}" readonly onclick="this.select()" style="margin-bottom: 5px; font-size: 12px; cursor: text;" title="${img.name}">
-					<button class="btn btn-default btn-xs" onclick="navigator.clipboard.writeText('${img.url}').then(()=>alert('链接已复制'))">复制</button>
+					<input type="text" class="form-control input-sm" value="${fullUrl}" readonly onclick="this.select()" style="margin-bottom: 5px; font-size: 12px; cursor: text;" title="${img.name}">
+					<button class="btn btn-default btn-xs" onclick="navigator.clipboard.writeText('${fullUrl}').then(()=>alert('链接已复制'))">复制</button>
 					<button class="btn btn-warning btn-xs" onclick="editImage('${img.id}')">编辑</button>
 					<button class="btn btn-danger btn-xs pull-right" onclick="deleteImage('${img.id}')">删除</button>
 				</div>
 			</div>
-		`).join('');
+			`;
+		}).join('');
 		container.html(html);
 		$('#selectAllCheckbox').prop('checked', false);
 		updateImagePagination();
