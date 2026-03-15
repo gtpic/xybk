@@ -114,7 +114,7 @@ async function handleRequest({ request, env, ctx }) {
 			data["widgetCategoryList"] = categories.map(cat => ({ ...cat, ...parseIconAndColor(cat.icon) }));
 			data["widgetLinkList"] = JSON.parse(configs["WidgetLink"] || "[]");
             // 获取热门文章 (D1 直查)
-			const { results: recent } = await env.db.prepare("SELECT id, title, link, createDate, hasPassword, isPinned FROM articles WHERE isHidden = 0 ORDER BY isPinned DESC, createDate DESC LIMIT 5").all();
+			const { results: recent } = await env.db.prepare("SELECT id, title, link, createDate, hasPassword, isPinned, firstImageUrl FROM articles WHERE isHidden = 0 ORDER BY isPinned DESC, createDate DESC LIMIT 5").all();
 			data["widgetRecentlyList"] = recent.map(item => ({ ...item, url: `/article/${item.id}/${item.link}`, isPasswordProtected: !!item.hasPassword, createDate10: item.createDate.substring(0, 10) }));
 			return await renderHTML(request, data, theme + "/fontawesome.html", 200, env, ctx);
 		}
@@ -726,12 +726,10 @@ async function getIndexData(request, env) {
     data["carousel_slides"] = carousel;
 
     // D1 SQL: 侧边栏近期文章
-    const { results: recent } = await env.db.prepare("SELECT id, title, link, createDate, hasPassword, isPinned FROM articles WHERE isHidden = 0 ORDER BY isPinned DESC, createDate DESC LIMIT 5").all();
+    const { results: recent } = await env.db.prepare("SELECT id, title, link, createDate, hasPassword, isPinned, firstImageUrl FROM articles WHERE isHidden = 0 ORDER BY isPinned DESC, createDate DESC LIMIT 5").all();
 	for (const item of recent) {
 		item.url = `/article/${item.id}/${item.link}`;
-		item.isPasswordProtected = !!item.hasPassword; 
-        item.createDate10 = item.createDate.substring(0, 10);
-        item.isPinned = !!item.isPinned;
+		item.isPasswordProtected = !!item.hasPassword;
 	}
 	data["widgetRecentlyList"] = recent;
     
@@ -800,7 +798,7 @@ async function getArticleData(request, id, env, ctx) {
 	data["widgetCategoryList"] = allCategories.map(cat => ({ ...cat, ...parseIconAndColor(cat.icon) }));
 	data["widgetLinkList"] = JSON.parse(configs.WidgetLink || "[]");
 	
-    const { results: recent } = await env.db.prepare("SELECT id, title, link, createDate, hasPassword, isPinned FROM articles WHERE isHidden = 0 ORDER BY isPinned DESC, createDate DESC LIMIT 5").all();
+    const { results: recent } = await env.db.prepare("SELECT id, title, link, createDate, hasPassword, isPinned, firstImageUrl FROM articles WHERE isHidden = 0 ORDER BY isPinned DESC, createDate DESC LIMIT 5").all();
 	data["widgetRecentlyList"] = recent.map(item => ({...item, url: `/article/${item.id}/${item.link}`, isPasswordProtected: !!item.hasPassword, isPinned: !!item.isPinned, createDate10: item.createDate.substring(0, 10) }));
     data["title"] = articleSingle.title;
 	return data;
@@ -833,7 +831,7 @@ async function getCategoryOrTagsData(request, type, key, page, env) {
 	data["widgetCategoryList"] = categories.map(cat => ({ ...cat, ...parseIconAndColor(cat.icon) }));
 	data["widgetLinkList"] = JSON.parse(configs.WidgetLink || "[]");
 	
-    const { results: recent } = await env.db.prepare("SELECT id, title, link, createDate, hasPassword, isPinned FROM articles WHERE isHidden = 0 ORDER BY isPinned DESC, createDate DESC LIMIT 5").all();
+    const { results: recent } = await env.db.prepare("SELECT id, title, link, createDate, hasPassword, isPinned, firstImageUrl FROM articles WHERE isHidden = 0 ORDER BY isPinned DESC, createDate DESC LIMIT 5").all();
 	data["widgetRecentlyList"] = recent.map(item => ({...item, url: `/article/${item.id}/${item.link}`, isPasswordProtected: !!item.hasPassword, isPinned: !!item.isPinned, createDate10: item.createDate.substring(0, 10) }));
 
     const { results: tagRows } = await env.db.prepare("SELECT tags FROM articles WHERE isHidden = 0 AND tags IS NOT NULL AND tags != ''").all();
@@ -869,7 +867,7 @@ async function getSearchData(request, key, page, env) {
 	data["widgetCategoryList"] = categories.map(cat => ({ ...cat, ...parseIconAndColor(cat.icon) }));
 	data["widgetLinkList"] = JSON.parse(configs.WidgetLink || "[]");
 	
-    const { results: recent } = await env.db.prepare("SELECT id, title, link, createDate, hasPassword, isPinned FROM articles WHERE isHidden = 0 ORDER BY isPinned DESC, createDate DESC LIMIT 5").all();
+    const { results: recent } = await env.db.prepare("SELECT id, title, link, createDate, hasPassword, isPinned, firstImageUrl FROM articles WHERE isHidden = 0 ORDER BY isPinned DESC, createDate DESC LIMIT 5").all();
 	data["widgetRecentlyList"] = recent.map(item => ({...item, url: `/article/${item.id}/${item.link}`, isPasswordProtected: !!item.hasPassword, isPinned: !!item.isPinned, createDate10: item.createDate.substring(0, 10) }));
 
     const { results: tagRows } = await env.db.prepare("SELECT tags FROM articles WHERE isHidden = 0 AND tags IS NOT NULL AND tags != ''").all();
