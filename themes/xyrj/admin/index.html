@@ -694,6 +694,71 @@
 <script src="{{ &OPT.theme_github_path }}xyrj/files/tinymce/langs/zh_CN.js"></script>
 <script src="{{ &OPT.theme_github_path }}xyrj/files/prism.combined.min.js"></script>
 <script type="text/javascript">
+	// ===== START: 自定义弹出框核心系统 =====
+    const xyrjUI = {
+        toast: function(msg, type = 'success') {
+            const bg = type === 'success' ? '#d4edda' : (type === 'error' ? '#f8d7da' : '#d9edf7');
+            const color = type === 'success' ? '#155724' : (type === 'error' ? '#721c24' : '#31708f');
+            const border = type === 'success' ? '#c3e6cb' : (type === 'error' ? '#f5c6cb' : '#bce8f1');
+            const toast = $(`<div style="position:fixed; top:20px; left:50%; transform:translateX(-50%); background:${bg}; color:${color}; border:1px solid ${border}; padding:10px 20px; border-radius:4px; z-index:99999; box-shadow:0 4px 12px rgba(0,0,0,0.15); opacity:0; transition: opacity 0.3s; pointer-events:none;">${msg}</div>`);
+            $('body').append(toast);
+            setTimeout(() => toast.css('opacity', '1'), 10);
+            // 2.5秒后自动消失
+            setTimeout(() => { toast.css('opacity', '0'); setTimeout(() => toast.remove(), 300); }, 2500); 
+        },
+        confirm: function(msg) {
+            return new Promise((resolve) => {
+                const modal = $(`
+                <div class="modal fade" tabindex="-1" role="dialog" style="background: rgba(0,0,0,0.5);">
+                    <div class="modal-dialog modal-sm" role="document" style="margin-top: 15vh;">
+                        <div class="modal-content">
+                            <div class="modal-body"><h5 style="margin:10px 0; font-size:15px; color:#333; line-height:1.5;">${msg}</h5></div>
+                            <div class="modal-footer" style="padding:10px; border-top:1px solid #eee; text-align:right;">
+                                <button type="button" class="btn btn-default btn-sm" id="btn-cancel">取消</button>
+                                <button type="button" class="btn btn-primary btn-sm" id="btn-ok">确定</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`);
+                $('body').append(modal);
+                modal.addClass('in').css('display', 'block');
+                modal.find('#btn-ok').click(() => { modal.remove(); resolve(true); });
+                modal.find('#btn-cancel').click(() => { modal.remove(); resolve(false); });
+            });
+        },
+        prompt: function(msg, defaultVal) {
+            return new Promise((resolve) => {
+                const modal = $(`
+                <div class="modal fade" tabindex="-1" role="dialog" style="background: rgba(0,0,0,0.5);">
+                    <div class="modal-dialog" role="document" style="margin-top: 15vh;">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <h5 style="margin-top:0; font-size:15px; margin-bottom:15px;">${msg}</h5>
+                                <input type="text" class="form-control" id="prompt-input" value="${defaultVal || ''}">
+                            </div>
+                            <div class="modal-footer" style="padding:10px; border-top:1px solid #eee;">
+                                <button type="button" class="btn btn-default btn-sm" id="btn-cancel">取消</button>
+                                <button type="button" class="btn btn-primary btn-sm" id="btn-ok">确定</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`);
+                $('body').append(modal);
+                modal.addClass('in').css('display', 'block');
+                modal.find('#prompt-input').focus();
+                modal.find('#btn-ok').click(() => { resolve(modal.find('#prompt-input').val()); modal.remove(); });
+                modal.find('#btn-cancel').click(() => { resolve(null); modal.remove(); });
+            });
+        }
+    };
+
+    // 全局覆写 window.alert！所有的原生的 alert 会自动变为无按钮的悬浮提示！
+    window.alert = function(msg) {
+        if (!msg) return;
+        const isError = msg.includes('失败') || msg.includes('错误') || msg.includes('不能为空') || msg.includes('错');
+        xyrjUI.toast(msg, isError ? 'error' : 'success');
+    };
+    // ===== END: 自定义弹出框核心系统 =====
 	$(function() {
         const loginWrapper = document.getElementById('login-wrapper');
         const loginForm = document.getElementById('login-form');
@@ -1357,8 +1422,8 @@ tinymce.init({
 		});
 	}
 
-	function deleteArticle(id) {
-		if (confirm("确定要删除这篇文章吗？此操作不可恢复。")) {
+	async function deleteArticle(id) {
+		if (await xyrjUI.confirm("确定要删除这篇文章吗？此操作不可恢复。")) {
 			$.ajax({
 				url: "/admin/delete/" + id,
 				type: 'POST',
@@ -1712,9 +1777,9 @@ function handleLinkInput(input) {
 		});
 	}
 
-	function importBlog(){
+	async function importBlog(){
 		if(!isJSON($('#importJson').val())) { alert("导入的JSON格式错误！"); return; }
-		if (!confirm("确定要导入吗？这将覆盖您现有的所有文章和设置！")){ return; }
+		if (!(await xyrjUI.confirm("确定要导入吗？这将覆盖您现有的所有文章和设置！"))){ return; }
 		$.ajax({
 			type: "POST", dataType: "json", contentType: "application/json; charset=utf-8",
 			url: "/admin/import/", data: JSON.stringify($("#importForm").serializeArray()),
@@ -1738,8 +1803,8 @@ function handleLinkInput(input) {
 		// 拼接参数并打开新窗口下载
 		window.open("/admin/export/?" + q.join('&'), "_blank");
 	}
-	function publish(){
-		if (!confirm("确定吗?发布将清理所有静态缓存,重新生成")){ return; }
+	async function publish(){
+		if (!(await xyrjUI.confirm("确定吗?发布将清理所有静态缓存,重新生成"))){ return; }
 		$.ajax({
 			type: "POST", dataType: "json", contentType: "application/json; charset=utf-8",
 			url: "/admin/publish/",
@@ -1861,8 +1926,8 @@ function loadComments() {
 		});
     }
 
-    function deleteComment(articleSlug, commentId) {
-        if (confirm('确定要删除这条评论吗？')) {
+    async function deleteComment(articleSlug, commentId) {
+        if (await xyrjUI.confirm('确定要删除这条评论吗？')) {
             $.ajax({ url: `/api/comments/${articleSlug}/${commentId}`, type: 'DELETE',
                 success: function() { $(`#comment-${commentId}`).remove(); },
                 error: function() { alert('删除失败'); }
@@ -1888,7 +1953,7 @@ function loadComments() {
 			return;
 		}
 
-		if (confirm(`确定要删除选中的 ${$selectedCheckboxes.length} 条评论吗？`)) {
+		if (await xyrjUI.confirm(`确定要删除选中的 ${$selectedCheckboxes.length} 条评论吗？`)) {
 			$(this).prop('disabled', true).text('删除中...');
 			const deletePromises = [];
 			
@@ -1983,8 +2048,8 @@ function loadComments() {
         });
     }
 
-    function deleteCarousel(slideId) {
-        if (confirm('确定要删除这张轮播图吗？')) {
+    async function deleteCarousel(slideId) {
+        if (await xyrjUI.confirm('确定要删除这张轮播图吗？')) {
             $.ajax({ url: `/api/carousel/${slideId}`, type: 'DELETE',
                 success: function() { $(`#slide-${slideId}`).remove(); },
                 error: function() { alert('删除失败'); }
@@ -1992,8 +2057,8 @@ function loadComments() {
         }
     }
     // --- START: 新增 - 保存轮播图顺序 (Sortable.js) ---
-	function saveCarouselOrder() {
-		if (!confirm("确定要保存轮播图的新顺序吗？")) { return; }
+	async function saveCarouselOrder() {
+		if (!(await xyrjUI.confirm("确定要保存轮播图的新顺序吗？"))) { return; }
 		
 		var slidesInOrder = [];
 		// 按照 DOM 顺序读取表格行
@@ -2153,7 +2218,7 @@ function loadComments() {
 	$(document).on('click', '#batchDeleteBtn', async function() {
 		const $checked = $('.img-checkbox:checked');
 		if ($checked.length === 0) return alert('请先勾选需要删除的图片');
-		if (!confirm(`确定要删除选中的 ${$checked.length} 张图片吗？`)) return;
+		if (!(await xyrjUI.confirm(`确定要删除选中的 ${$checked.length} 张图片吗？`))) return;
 		$(this).prop('disabled', true).text('删除中...');
 		const promises = [];
 		$checked.each(function() {
@@ -2168,10 +2233,10 @@ function loadComments() {
 		loadImages(true);
 	});
 
-	function editImage(id) {
+	async function editImage(id) {
 		const img = allImages.find(i => i.id === id);
 		if (!img) return;
-		const newName = prompt("请输入新的图片名称（建议保留后缀）：", img.name);
+		const newName = await xyrjUI.prompt("请输入新的图片名称（建议保留后缀）：", img.name);
 		if (!newName || newName.trim() === "" || newName.trim() === img.name) return;
 		$.ajax({ url: '/admin/api/images/' + id, type: 'PUT', contentType: 'application/json', data: JSON.stringify({ name: newName.trim() }),
 			success: function() { alert("修改成功！"); img.name = newName.trim(); renderImagesPage(currentImagePage, imagePageSize); },
@@ -2179,9 +2244,9 @@ function loadComments() {
 		});
 	}
 
-	function deleteImage(id) {
-		if (confirm("确定删除吗？")) {
-			$.ajax({ url: '/admin/api/images/' + id, type: 'DELETE', success: function() { 
+	async function deleteImage(id) {
+		if (await xyrjUI.confirm("确定删除吗？")) {
+			$.ajax({ url: '/admin/api/images/' + id, type: 'DELETE', success: function() {
 				$('#img-' + id).remove(); 
 				allImages = allImages.filter(img => img.id !== id);
 				filteredImages = filteredImages.filter(img => img.id !== id);
