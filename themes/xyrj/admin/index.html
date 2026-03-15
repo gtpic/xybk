@@ -512,8 +512,9 @@
 					<div id="config-io" class="tab-pane fade">
 					<form id="importForm" role="form" >
 						<div class="form-group">
-							<label for="name">将下方完整JSON复制/粘贴可用于备份和恢复</label>
-							<textarea class="form-control" id="importJson" name="importJson" rows="5" placeholder='从导出的文件中复制完整的JSON粘贴到这里'></textarea>
+							<label for="name">请选择导出的 .json 备份文件，或将完整JSON复制粘贴到下方</label>
+							<input type="file" id="importFile" accept=".json" class="form-control" style="margin-bottom: 10px; padding-bottom: 30px;" onchange="readImportFile(this)">
+							<textarea class="form-control" id="importJson" name="importJson" rows="4" placeholder='选择上方的 .json 文件后会自动读取到这里，也可以直接手动粘贴'></textarea>
 						</div>
 						<div class="form-group" style="margin-bottom: 15px;">
 							<label class="checkbox-inline"><input type="checkbox" id="export_settings" checked> 网站设置</label>
@@ -1819,7 +1820,15 @@ function handleLinkInput(input) {
 			error: function() { alert('保存失败，请检查网络或登录状态。'); }
 		});
 	}
-
+	function readImportFile(input) {
+		if (input.files && input.files[0]) {
+			var reader = new FileReader();
+			reader.onload = function (e) {
+				$('#importJson').val(e.target.result);
+			};
+			reader.readAsText(input.files[0]);
+		}
+	}
 	async function importBlog(){
 		if(!isJSON($('#importJson').val())) { alert("导入的JSON格式错误！"); return; }
 		if (!(await xyrjUI.confirm("确定要导入吗？这将覆盖您现有的所有文章和设置！"))){ return; }
