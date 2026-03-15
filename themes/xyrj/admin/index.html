@@ -194,15 +194,20 @@
 		<div class="tab-content">
 			<div class="tab-pane fade in active" id="list">
 				<div class="container-fluid">
-					<h3>我的文章</h3>
-					<div class="form-group" style="margin-bottom: 15px;">
-						<div class="input-group">
-							<input type="text" id="article-search-input" class="form-control" placeholder="搜索所有文章 (ID, 标题, 分类)...">
+					<div class="form-group" style="margin-bottom: 15px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+						<label style="margin: 0; display: flex; align-items: center; cursor: pointer; font-weight: normal;">
+							<input type="checkbox" id="select-all-articles" style="margin-right: 5px;"> 全选
+						</label>
+						<button type="button" class="btn btn-sm btn-danger" id="batch-delete-articles-btn" style="margin-bottom: 0;">
+							<i class="fas fa-trash"></i> 删除选中
+						</button>
+						<div class="input-group" style="width: 380px; max-width: 100%;">
+							<input type="text" id="article-search-input" class="form-control input-sm" placeholder="搜索所有文章 (ID, 标题, 分类)...">
 							<span class="input-group-btn">
-								<button class="btn btn-primary" type="button" id="article-search-button">
+								<button class="btn btn-primary btn-sm" type="button" id="article-search-button">
 									<i class="fas fa-search"></i> 搜索
 								</button>
-								<button class="btn btn-default" type="button" id="article-search-clear">
+								<button class="btn btn-default btn-sm" type="button" id="article-search-clear">
 									<i class="fas fa-times"></i> 清除
 								</button>
 							</span>
@@ -211,6 +216,7 @@
 					<table class="table table-striped" id="articleList">
 						<thead>
 							<tr>
+								<th style="width: 50px;">选择</th>
 								<th>ID</th>
 								<th>标题</th>
 								<th>创建日期</th>
@@ -1283,6 +1289,7 @@ tinymce.init({
 			}
 
 			tableContent += `<tr id="article-row-${Info.id}">
+				<td><input type="checkbox" class="article-checkbox" data-id="${Info.id}"></td>
 				<td>${Info.id}</td>
 				<td>${Info.title}</td>
 				<td>${Info.createDate ? Info.createDate.replace("T"," ") : ''}</td>
@@ -1443,6 +1450,52 @@ tinymce.init({
 			});
 		}
 	}
+
+	// --- START: 文章全选与批量删除逻辑 ---
+	$(document).on('change', '#select-all-articles', function() {
+		$('.article-checkbox').prop('checked', $(this).prop('checked'));
+	});
+
+	$(document).on('click', '#batch-delete-articles-btn', async function() {
+		const $selectedCheckboxes = $('.article-checkbox:checked');
+		
+		if ($selectedCheckboxes.length === 0) {
+			alert('请至少选择一篇文章');
+			return;
+		}
+
+		if (await xyrjUI.confirm(`确定要删除选中的 ${$selectedCheckboxes.length} 篇文章吗？此操作不可恢复。`)) {
+			$(this).prop('disabled', true).text('删除中...');
+			const deletePromises = [];
+			
+			$selectedCheckboxes.each(function() {
+				const id = $(this).data('id');
+				if (id) {
+					const deletePromise = $.ajax({ 
+						url: "/admin/delete/" + id, 
+						type: 'POST', 
+						dataType: "json" 
+					}).then(() => id).catch(() => null);
+					deletePromises.push(deletePromise);
+				}
+			});
+
+			const results = await Promise.allSettled(deletePromises);
+			let successCount = 0;
+			
+			results.forEach(result => {
+				if (result.status === 'fulfilled' && result.value) {
+					$('#article-row-' + result.value).remove();
+					successCount++;
+				}
+			});
+
+			alert(`批量删除完成：成功删除 ${successCount} 篇`);
+			$('#select-all-articles').prop('checked', false);
+			$(this).prop('disabled', false).html('<i class="fas fa-trash"></i> 删除选中');
+		}
+	});
+	// --- END: 文章全选与批量删除逻辑 ---
 
 	function saveAddNew(){
 		if($('#title').val() == "" || $('#createDate').val() == "" || !$('#category').val() || $('#category').val().length === 0){
