@@ -143,6 +143,7 @@ async function handleRequest({ request, env, ctx }) {
                 data["siteName"] = configs["siteName"] || '';
                 data["logo"] = configs["logo"] || '';
                 data["tg_bot_token"] = configs["tg_bot_token"] || ''; data["tg_chat_id"] = configs["tg_chat_id"] || '';
+				data["xytk_api_url"] = configs["xytk_api_url"] || ''; data["xytk_api_key"] = configs["xytk_api_key"] || '';
                 data["active_storage_node"] = configs["active_storage_node"] || 'r2';
                 if (configs["showSiteNameInHeader"] === 'false') {
                     data["showSiteNameInHeader_false"] = true;
@@ -369,6 +370,16 @@ async function handleRequest({ request, env, ctx }) {
 							const tgData = await tgRes.json();
 							if (!tgData.ok) return new Response("TG上传失败", { status: 500 });
 							finalUrl = `/image/${tgData.result.document.file_id}.${fileExt}`;
+							} else if (activeNode === 'xytk') {
+							const apiUrl = configs["xytk_api_url"];
+							const apiKey = configs["xytk_api_key"];
+							if (!apiUrl || !apiKey) return new Response("外部API配置缺失", { status: 400 });
+							const apiFormData = new FormData();
+							apiFormData.append('file', new Blob([fileArrayBuffer], { type: file.type }), fileName);
+							const apiRes = await fetch(apiUrl, { method: 'POST', headers: { 'Authorization': 'Bearer ' + apiKey }, body: apiFormData });
+							const apiData = await apiRes.json();
+							if (!apiRes.ok || !apiData.success) return new Response("外部图床上传失败", { status: 500 });
+							finalUrl = apiData.url;
 						} else if (activeNode === 'r2' && env.r2) {
 							await env.r2.put(fileName, fileArrayBuffer, { httpMetadata: { contentType: file.type } });
 							finalUrl = `/image/${fileName}`;
