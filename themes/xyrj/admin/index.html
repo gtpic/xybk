@@ -83,11 +83,19 @@
 			padding-top: 2px;
 			padding-bottom: 2px;
 		}
+		.tab-content .tab-pane > h3:first-of-type, 
+		.tab-content .tab-pane > .container-fluid > h3:first-of-type {
+			margin: 0px 0 10px !important;
+		}
 		/* --- START: 图片管理画廊样式 --- */
 		.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; background: #f9f9f9; padding: 15px; border-radius: 4px; min-height: 200px; }
-		.img-card { background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 8px; position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-		.img-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 4px; border: 1px solid #f0f0f0; }
-		.img-badge { position: absolute; top: 10px; right: 10px; font-size: 11px; color: #fff; background: rgba(0,0,0,0.5); padding: 2px 5px; border-radius: 3px; pointer-events: none; z-index: 10; }
+		@media (max-width: 450px) { .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(calc(50% - 7.5px), 1fr)); gap: 10px; padding: 10px; } }
+		@media (max-width: 229px) { .gallery-grid { grid-template-columns: 1fr; } }
+		.img-card { border: 1px solid #ddd; border-radius: 4px; padding: 4px; background: #fff; position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+		.img-card img { width: 100%; height: 160px; object-fit: scale-down; background-color: #f9f9f9; border-radius: 3px; }
+		.img-badge { position: absolute; top: 10px; right: 10px; font-size: 11px; font-weight: bold; color: #fff; padding: 2px 5px; border-radius: 3px; pointer-events: none; z-index: 10; }
+		.badge-r2 { background-color: #f48120; }
+		.badge-tg { background-color: #0088cc; }
 		.admin-pagination { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; font-size: 14px; color: #555; }
 		.admin-pagination-right button { margin: 0 2px; padding: 5px 10px; border: 1px solid #ddd; background: #fff; border-radius: 3px; cursor: pointer; color: #333; }
 		.admin-pagination-right button.active { background: #337ab7; color: white; border-color: #337ab7; }
