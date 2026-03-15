@@ -740,7 +740,7 @@ async function getIndexData(request, env) {
 }
 
 async function getArticleData(request, id, env, ctx) {
-    const articleSingle = await env.db.prepare("SELECT * FROM articles WHERE id = ?").first();
+	const articleSingle = await env.db.prepare("SELECT * FROM articles WHERE id = ?").bind(id).first();
 	if (!articleSingle) return new Response("Article not found", { status: 404 });
 
     // 异步更新浏览量
