@@ -2223,7 +2223,7 @@ function loadComments() {
 
 		const html = pageImages.map(img => {
 			// 动态获取当前域名并拼接成完整 URL
-			const fullUrl = window.location.origin + img.url;
+			const fullUrl = img.url.startsWith('http') ? img.url : window.location.origin + img.url;
 			return `
 			<div class="img-card" id="img-${img.id}">
 				<input type="checkbox" class="img-checkbox" data-id="${img.id}" style="position: absolute; top: 10px; left: 10px; z-index: 10; width: 16px; height: 16px; cursor: pointer;">
