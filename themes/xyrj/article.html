@@ -478,20 +478,22 @@
 									{{ #articleNewer }}	
 									<div class="entry-page-prev j-lazy lazyloaded" style="background-image: url(&quot;{{ &img }}&quot;); display: block;" data-original="{{ &img }}" data-bg="{{ &img }}" fifu-width="392" fifu-height="86">
 										<a href="{{ &url }}" title="{{ &title }}" rel="prev" >
-											<span>{{ &title }}</span></a>
-										<div class="entry-page-info">
+											<div class="entry-page-info">
 											<span class="pull-left">上一篇</span>
-											<span class="pull-right">{{ &createDate10 }}</span></div>
+											<span class="pull-right">{{ &createDate10 }}</span>
+											</div>
+											<span>{{ &title }}</span>
+										</a>
 									</div>
 									{{ /articleNewer }}
 
 									{{ #articleOlder }}
 									<div class="entry-page-next j-lazy lazyloaded" style="background-image: url(&quot;{{ &img }}&quot;); display: block;" data-original="{{ &img }}" data-bg="{{ &img }}" fifu-width="392" fifu-height="86">
 										<a href="{{ &url }}" title="{{ &title }}" rel="next" >
-											<span>{{ &title }}</span></a>
-										<div class="entry-page-info">
+											<div class="entry-page-info">
 											<span class="pull-right">下一篇</span>
 											<span class="pull-left">{{ &createDate10 }}</span></div>
+											<span>{{ &title }}</span></a>
 									</div>
 									{{ /articleOlder }}
 								</div>
