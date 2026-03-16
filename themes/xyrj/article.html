@@ -778,13 +778,10 @@ window.addEventListener('load', function() {
         const customText = document.getElementById('custom-contact-text');
         
         if (customTrigger && customOptions) {
-            // 点击触发器展开/收起下拉框
             customTrigger.addEventListener('click', function(e) {
                 e.stopPropagation();
                 customOptions.classList.toggle('open');
             });
-            
-            // 点击选项赋值并关闭下拉框
             customOptions.querySelectorAll('li').forEach(function(item) {
                 item.addEventListener('click', function(e) {
                     e.stopPropagation();
@@ -793,11 +790,15 @@ window.addEventListener('load', function() {
                     customOptions.classList.remove('open');
                 });
             });
-
-            // 点击页面其他空白处收起下拉框
             document.addEventListener('click', function() {
                 customOptions.classList.remove('open');
             });
+            window.addEventListener('scroll', function() {
+                customOptions.classList.remove('open');
+            }, { passive: true });
+            document.addEventListener('touchmove', function() {
+                customOptions.classList.remove('open');
+            }, { passive: true });
         }
         // --- END: 自定义下拉框 JS 逻辑 ---
         // --- START: New Captcha Function ---
