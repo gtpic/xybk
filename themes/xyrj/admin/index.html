@@ -1481,8 +1481,8 @@ tinymce.init({
 		const promises = [];
 		
 		$checked.each(function() {
-			const id = $(this).data('id');
-			promises.push($.ajax({ url: "/admin/delete/" + id, type: 'POST', dataType: "json" }).then(() => id).catch(() => null));
+		    const id = $(this).data('id');
+		    promises.push(Promise.resolve($.ajax({ url: "/admin/delete/" + id, type: 'POST', dataType: "json" })).then(() => id).catch(() => null));
 		});
 		
 		const results = await Promise.allSettled(promises);
@@ -2029,13 +2029,13 @@ function loadComments() {
 				
 				if (slug && id && $row.length > 0) {
 					// 为每一次删除创建一个 promise (使用$.ajax)
-					const deletePromise = $.ajax({ 
-						url: `/api/comments/${slug}/${id}`, 
-						type: 'DELETE' 
-					}).then(function() {
-						return $row; // 成功时，返回$row
+					const deletePromise = Promise.resolve($.ajax({ 
+					    url: `/api/comments/${slug}/${id}`, 
+					    type: 'DELETE' 
+					})).then(function() {
+					    return $row; // 成功时，返回$row
 					}).catch(function() {
-						return Promise.reject($row); // 失败时，也返回$row
+					    return Promise.reject($row); // 失败时，也返回$row
 					});
 					deletePromises.push(deletePromise);
 				}
@@ -2286,8 +2286,8 @@ function loadComments() {
 		$(this).prop('disabled', true).text('删除中...');
 		const promises = [];
 		$checked.each(function() {
-			const id = $(this).data('id');
-			promises.push($.ajax({ url: '/admin/api/images/' + id, type: 'DELETE' }).then(() => id).catch(() => null));
+		    const id = $(this).data('id');
+		    promises.push(Promise.resolve($.ajax({ url: '/admin/api/images/' + id, type: 'DELETE' })).then(() => id).catch(() => null));
 		});
 		const results = await Promise.allSettled(promises);
 		let success = 0;
