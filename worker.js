@@ -506,6 +506,51 @@ async function handleRequest({ request, env, ctx }) {
 			xml += `</urlset>`;
 			return new Response(xml, { status: 200, headers: { 'Content-Type': 'application/xml;charset=UTF-8' }});
 		}
+		else if (pathname.startsWith("/atom.xml") || pathname.startsWith("/rss.xml")) {
+			// 获取网站配置信息
+			const configs = await getConfigs(env);
+			const siteUrl = url.origin;
+			const siteName = configs.siteName || "我的博客";
+			const siteDescription = configs.site_description || "";
+			
+			// 从 D1 数据库查询最新公开的 20 篇文章
+			const { results } = await env.db.prepare("SELECT id, title, link, createDate, contentText FROM articles WHERE isHidden = 0 AND hasPassword = 0 ORDER BY createDate DESC LIMIT 20").all();
+			// 获取最后更新时间
+			let lastBuildDate = new Date().toUTCString();
+			if (results.length > 0 && results[0].createDate) {
+				lastBuildDate = new Date(results[0].createDate).toUTCString();
+			}
+
+			// 拼接 RSS 2.0 标准 XML 头部
+			let xml = `<?xml version="1.0" encoding="UTF-8"?>
+				<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+				<channel>
+					<title><![CDATA[${siteName}]]></title>
+					<link>${siteUrl}</link>
+					<description><![CDATA[${siteDescription}]]></description>
+					<atom:link href="${siteUrl}${pathname}" rel="self" type="application/rss+xml" />
+					<lastBuildDate>${lastBuildDate}</lastBuildDate>`;
+				
+							// 循环拼接每一篇文章
+							for (const item of results) {
+								const itemUrl = `${siteUrl}/article/${item.id}/${item.link}`;
+								const pubDate = new Date(item.createDate).toUTCString();
+								xml += `
+					<item>
+						<title><![CDATA[${item.title}]]></title>
+						<link>${itemUrl}</link>
+						<guid>${itemUrl}</guid>
+						<pubDate>${pubDate}</pubDate>
+						<description><![CDATA[${item.contentText || ''}]]></description>
+					</item>`;
+							}
+							
+							// 拼接结尾
+							xml += `
+				</channel>
+				</rss>`;
+							return new Response(xml, { status: 200, headers: { 'Content-Type': 'application/xml;charset=UTF-8' }});
+		}
         // --- API 接口路由 ---
 		else if (pathname.startsWith('/api/comments/') && request.method === 'GET') {
 			const articleSlug = pathname.split('/')[3]; 
