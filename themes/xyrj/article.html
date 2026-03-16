@@ -117,9 +117,59 @@
             vertical-align: middle;
         }
         
-        #contact-type {
-            border-radius: 4px;
+        /* 自定义下拉框样式 */
+        .custom-select-wrapper {
+            position: relative;
+            display: inline-block;
+            user-select: none;
+        }
+        .custom-select-trigger {
+            height: 36px;
+            padding: 0 10px;
             border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            min-width: 90px;
+            box-sizing: border-box;
+            outline: none !important; /* 去除焦点蓝边 */
+            -webkit-tap-highlight-color: transparent; /* 去除移动端点击高亮 */
+        }
+        .custom-select-trigger i {
+            margin-left: 8px;
+            font-size: 12px;
+            color: #888;
+        }
+        .custom-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 4px 0 0;
+            padding: 0;
+            list-style: none;
+            z-index: 100;
+            display: none;
+        }
+        .custom-options.open {
+            display: block;
+        }
+        .custom-options li {
+            padding: 8px 10px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #555;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .custom-options li:hover {
+            background: #f5f5f5;
         }
 
         #contact-value {
@@ -127,6 +177,11 @@
             margin-left: 5px;
             border-radius: 4px;
             border: 1px solid #ddd;
+            outline: none !important; /* 去除输入框聚集蓝边 */
+            -webkit-tap-highlight-color: transparent;
+        }
+        #contact-value:focus {
+            border-color: #aaa; /* 去除蓝边后，给一个柔和的边框变色作为反馈 */
         }
         
         #captcha-input {
@@ -452,14 +507,20 @@
                         
                         <div class="comment-form-bottom-row">
 
-                            <p class="comment-form-contact">
-                                <label for="contact-type">联系方式:</label>
-                                <select id="contact-type" name="contact-type">
-                                    <option value="email">邮箱</option>
-                                    <option value="QQ">QQ</option>
-                                    <option value="wechat">微信</option>
-                                    <option value="telegram">Telegram</option>
-                                </select>
+                            <label for="contact-type">联系方式:</label>
+                                <div class="custom-select-wrapper">
+                                    <div class="custom-select-trigger" id="custom-contact-trigger">
+                                        <span id="custom-contact-text">邮箱</span>
+                                        <i class="fal fa-angle-down"></i>
+                                    </div>
+                                    <ul class="custom-options" id="custom-contact-options">
+                                        <li data-value="email">邮箱</li>
+                                        <li data-value="QQ">QQ</li>
+                                        <li data-value="wechat">微信</li>
+                                        <li data-value="telegram">Telegram</li>
+                                    </ul>
+                                </div>
+                                <input type="hidden" id="contact-type" name="contact-type" value="email">
                                 <input type="text" id="contact-value" name="contact-value" placeholder="请输入联系方式">
                             </p>
 
@@ -711,8 +772,34 @@ window.addEventListener('load', function() {
         const captchaInputEl = document.getElementById('captcha-input');
         const captchaAnswerEl = document.getElementById('captcha-answer');
         // --- END: New Captcha/Contact Elements ---
+		// --- START: 自定义下拉框 JS 逻辑 ---
+        const customTrigger = document.getElementById('custom-contact-trigger');
+        const customOptions = document.getElementById('custom-contact-options');
+        const customText = document.getElementById('custom-contact-text');
+        
+        if (customTrigger && customOptions) {
+            // 点击触发器展开/收起下拉框
+            customTrigger.addEventListener('click', function(e) {
+                e.stopPropagation();
+                customOptions.classList.toggle('open');
+            });
+            
+            // 点击选项赋值并关闭下拉框
+            customOptions.querySelectorAll('li').forEach(function(item) {
+                item.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    customText.textContent = this.textContent; // 改变显示的文字
+                    contactTypeEl.value = this.getAttribute('data-value'); // 改变隐藏输入框的值给提交用
+                    customOptions.classList.remove('open');
+                });
+            });
 
-
+            // 点击页面其他空白处收起下拉框
+            document.addEventListener('click', function() {
+                customOptions.classList.remove('open');
+            });
+        }
+        // --- END: 自定义下拉框 JS 逻辑 ---
         // --- START: New Captcha Function ---
         function generateCaptcha() {
             const num1 = Math.floor(Math.random() * 10) + 1; // 1-10
