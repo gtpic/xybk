@@ -795,8 +795,8 @@ textarea {
     .main-nav .close-menu-btn {
         display: block;
         position: absolute;
-        top: 15px;
-        right: 20px;
+        top: 8px;
+        right: 16px;
         font-size: 30px;
         line-height: 1;
         color: #888;
