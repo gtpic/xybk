@@ -142,6 +142,7 @@ async function handleRequest({ request, env, ctx }) {
 				data["favicon"] = configs["favicon"] || '';
                 data["siteName"] = configs["siteName"] || '';
                 data["logo"] = configs["logo"] || '';
+				data["mobile_header_bg"] = configs["mobile_header_bg"] || '';
                 data["tg_bot_token"] = configs["tg_bot_token"] || ''; data["tg_chat_id"] = configs["tg_chat_id"] || '';
 				data["xytk_api_url"] = configs["xytk_api_url"] || ''; data["xytk_api_key"] = configs["xytk_api_key"] || '';
                 data["active_storage_node"] = configs["active_storage_node"] || 'r2';
@@ -650,6 +651,7 @@ async function render(data, template_path, env) {
     site.logo = configs.logo || "";
     site.siteName = configs.siteName || "";
     site.theme_github_path = configs.theme_github_path || site.theme_github_path;
+	site.mobile_header_bg = configs.mobile_header_bg || (site.theme_github_path + "xyrj/files/mobile-header.webp");
 	site.favicon = configs.favicon || "";
     site.siteDescription = configs.site_description || "";
     site.siteKeywords = configs.site_keywords || "";
