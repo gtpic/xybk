@@ -692,8 +692,7 @@ async function render(data, template_path, env) {
     
     // 统一通过高并发 KV 缓存获取全部设置
     const configs = await getConfigs(env);
-
-    site.logo = configs.logo || "";
+    site.logo = configs.logo || (site.theme_github_path + "xyrj/files/logo.png");
     site.siteName = configs.siteName || "";
     site.theme_github_path = configs.theme_github_path || site.theme_github_path;
 	site.mobile_header_bg = configs.mobile_header_bg || (site.theme_github_path + "xyrj/files/mobile-header.webp");
