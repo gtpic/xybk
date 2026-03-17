@@ -47,7 +47,7 @@ let site = {
 	"logo": cdn + "/" + theme + "/files/logo.png", // 【可改】网站 Logo 图片地址。如果你有外链图片，可以换成 "https://xxx.com/logo.png"
 	"siteName": "夏雨个人博客",        // 【可改】网站左上角或顶部显示的默认网站名字
 	"siteDescription": "分享技术与生活", // 【可改】网站的默认简介（用于搜索引擎收录 SEO 或页面副标题）
-	"copyRight": "<p>Copyright @ 2025 <a href="https://github.com/Air-L/cf-pages-blog-template" target="_blank">夏雨日记 </a> - 基于  Cloudflare  构建</p>", // 【可改】网页最底部的版权声明
+	"copyRight": '<p>Copyright @ 2025 <a href="https://github.com/Air-L/cf-pages-blog-template" target="_blank">夏雨日记 </a> - 基于  Cloudflare  构建</p>', // 【可改】网页最底部的版权声明（已修复单双引号冲突）
 	"siteKeywords": "博客,生活,技术",   // 【可改】网站的默认关键词，给搜索引擎抓取用的，词之间用半角逗号隔开
 	"theme_github_path": cdn + "/", // 【建议保留默认】前端主题静态文件的路径根目录
 	"codeBeforHead": "", // 【可留空】你想插入到网页 <head> 标签前的代码（比如 Google Analytics 统计代码）
