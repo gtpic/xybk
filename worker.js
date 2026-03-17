@@ -322,6 +322,43 @@ async function handleRequest({ request, env, ctx }) {
 				else if (pathname.startsWith('/admin/api/images/') && request.method === 'DELETE') {
 					const imageId = pathname.split('/').pop();
 					try {
+						// 1. 先查出该图片的信息，获取它的 URL 和 存储节点类型
+						const imgRecord = await env.db.prepare("SELECT * FROM images WHERE id = ?").bind(imageId).first();
+						
+						if (imgRecord) {
+							const configs = await getConfigs(env);
+							
+							// 2. 如果是外部 API，则发起请求删除远端图片
+							if (imgRecord.storage_node === 'xytk') {
+								const apiKey = configs["xytk_api_key"];
+								
+								// 假设你的图床删除 API 和 上传 API 在同一目录下，且后缀是 delete
+								// 如果你的图床有特定的删除 API 地址，请修改下面的 deleteApiUrl
+								const deleteApiUrl = configs["xytk_api_url"].replace('upload', 'delete'); 
+								
+								try {
+									await fetch(deleteApiUrl, {
+										method: 'POST', // 部分图床要求是 DELETE 方法，请根据图床文档调整
+										headers: {
+											'Authorization': 'Bearer ' + apiKey,
+											'Content-Type': 'application/json'
+										},
+										body: JSON.stringify({ url: imgRecord.url }) // 传递要删除的图片URL
+									});
+								} catch (err) {
+									console.error("同步删除外部图床图片失败:", err);
+									// 远端删除失败不阻断，继续清理本地数据
+								}
+							}
+							
+							// (顺便补全) 如果是 R2 存储，真实删除 R2 桶里的文件
+							else if (imgRecord.storage_node === 'r2' && env.r2) {
+								const fileName = imgRecord.url.replace('/image/', '');
+								await env.r2.delete(fileName);
+							}
+						}
+
+						// 3. 最后删除本地 D1 数据库记录
 						await env.db.prepare("DELETE FROM images WHERE id = ?").bind(imageId).run();
 						return new Response(JSON.stringify({ msg: "OK" }), { status: 200 });
 					} catch (e) {
