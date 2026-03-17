@@ -549,7 +549,7 @@
 										<i class="fas fa-cloud-upload-alt"></i>
 										<h4>将图片拖拽到此处，或点击下方按钮选择</h4>
 										<p class="text-muted" id="file-name-display">支持 JPG, PNG, GIF, WEBP 等格式</p>
-										<input type="file" id="imageFileInput" accept="image/*" style="display: none;" onchange="updateFileNameDisplay()">
+										<input type="file" id="imageFileInput" accept="image/*" multiple style="display: none;" onchange="updateFileNameDisplay()">
 										<div class="form-group" style="display: flex; margin-top: 25px; margin-bottom: 0; align-items: center;">
 										    <button type="button" class="btn btn-info" style="height: 34px; margin-right: 10px;" onclick="$('#imageFileInput').click()"></i>选择图片</button>
 										    <input type="text" id="customFileName" class="form-control" placeholder="自定义图片名称（可选，留空则使用原名）" style="flex-grow: 1; height: 34px; margin-right: 10px;">
@@ -2322,16 +2322,21 @@ function loadComments() {
 	}
 
 	function updateFileNameDisplay() {
-		var file = $('#imageFileInput')[0].files[0];
-		if (file) {
+		var files = $('#imageFileInput')[0].files;
+		if (files.length === 1) {
+			var file = files[0];
 			$('#file-name-display').text('已选择: ' + file.name);
 			if(!$('#customFileName').val()) {
 				var nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
 				$('#customFileName').val(nameWithoutExt);
 			}
+			$('#customFileName').prop('disabled', false).attr('placeholder', '自定义图片名称（可选，留空则使用原名）');
+		} else if (files.length > 1) {
+			$('#file-name-display').text('已选择 ' + files.length + ' 张图片');
+			$('#customFileName').prop('disabled', false).attr('placeholder', '批量上传填名称将自动加序号 (例: 名称1, 名称2)');
 		} else {
 			$('#file-name-display').text('支持 JPG, PNG, GIF, WEBP 等格式');
-			$('#customFileName').val('');
+			$('#customFileName').val('').prop('disabled', false).attr('placeholder', '自定义图片名称（可选，留空则使用原名）');
 		}
 	}
 
@@ -2343,28 +2348,40 @@ function loadComments() {
 		if (files.length > 0) { $('#imageFileInput')[0].files = files; updateFileNameDisplay(); }
 	});
 
-	function uploadImage() {
-		if ($('#imageFileInput')[0].files.length === 0) return alert("请先选择图片！");
-		var file = $('#imageFileInput')[0].files[0];
+	async function uploadImage() {
+		var files = $('#imageFileInput')[0].files;
+		if (files.length === 0) return alert("请先选择图片！");
 		var customName = $('#customFileName').val().trim();
-		var finalName = file.name;
-		if (customName) {
-			var ext = file.name.substring(file.name.lastIndexOf('.'));
-			finalName = customName.endsWith(ext) ? customName : customName + ext;
-		}
-		var formData = new FormData(); 
-		formData.append("file", file, finalName);
 		$('#btn-upload-image').prop('disabled', true).text('上传中...');
-		$.ajax({ url: '/admin/api/upload_image', type: 'POST', data: formData, processData: false, contentType: false,
-			success: function() { 
-				alert("上传成功！"); 
-				$('#imageFileInput').val(''); $('#customFileName').val('');
-				$('#file-name-display').text('支持 JPG, PNG, GIF, WEBP 等格式');
-				loadImages(true); 
-			},
-			error: function() { alert("上传失败，请检查设置。"); },
-			complete: function() { $('#btn-upload-image').prop('disabled', false).html('开始上传'); }
-		});
+		
+		let successCount = 0, failCount = 0;
+		for (let i = 0; i < files.length; i++) {
+			let file = files[i];
+			let finalName = file.name;
+			
+			if (customName) {
+				var ext = file.name.substring(file.name.lastIndexOf('.'));
+				let currentName = files.length > 1 ? customName + (i + 1) : customName;
+				finalName = currentName.endsWith(ext) ? currentName : currentName + ext;
+			}
+			
+			var formData = new FormData(); 
+			formData.append("file", file, finalName);
+			
+			try {
+				await $.ajax({ url: '/admin/api/upload_image', type: 'POST', data: formData, processData: false, contentType: false });
+				successCount++;
+			} catch(e) {
+				failCount++;
+			}
+		}
+		
+		$('#imageFileInput').val(''); 
+		$('#customFileName').val('').prop('disabled', false).attr('placeholder', '自定义图片名称（可选，留空则使用原名）');
+		$('#file-name-display').text('支持 JPG, PNG, GIF, WEBP 等格式');
+		loadImages(true); 
+		$('#btn-upload-image').prop('disabled', false).html('开始上传');
+		alert(`上传完成！成功: ${successCount} 张` + (failCount > 0 ? `, 失败: ${failCount} 张` : ''));
 	}
 
 	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) { if(e.target.hash == "#image-manager") loadImages(); });
