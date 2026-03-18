@@ -608,6 +608,25 @@
 					<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom" style="padding-bottom: 9px !important; margin-bottom: 1rem !important; border-bottom: 1px solid #eee !important;">
 						<h3>评论管理</h3>
 					</div>
+					<div class="panel panel-default" style="margin-top: 15px;">
+						<div class="panel-heading">评论基础设置</div>
+						<div class="panel-body">
+							<form class="form-inline" onsubmit="return false;">
+								<div class="form-group" style="margin-right: 20px; margin-bottom: 10px;">
+									<label for="admin_comment_id">博主验证标识：</label>
+									<input type="text" class="form-control" id="admin_comment_id" placeholder="如: zyx888" style="width: 200px;">
+									<small style="color: #888; display: block;">* 在前台评论联系方式中填写此值，即显示为带图标的博主</small>
+								</div>
+								<div class="form-group" style="margin-right: 20px; margin-bottom: 10px; vertical-align: top;">
+									<label for="comment_max_length">评论最大字数：</label>
+									<input type="number" class="form-control" id="comment_max_length" placeholder="默认 500" style="width: 120px;">
+								</div>
+								<button type="button" class="btn btn-primary" onclick="saveCommentSettings()" style="vertical-align: top;">
+									<i class="fas fa-save"></i> 保存设置
+								</button>
+							</form>
+						</div>
+					</div>
 					<div class="form-group" style="margin-bottom: 15px; margin-top: 15px; display: flex; align-items: center; flex-wrap: wrap;">
 						<label style="margin: 0 15px 0 0; display: flex; align-items: center; cursor: pointer; font-weight: normal;">
 							<input type="checkbox" id="select-all-comments" style="margin-right: 5px;"> 全选
@@ -1179,6 +1198,8 @@ tinymce.init({
 			$('#showMarqueeOnIndex').prop('checked', `{{ OPT.showMarqueeOnIndex }}` === 'true');
 			$('#showMarqueeOnArticle').prop('checked', `{{ OPT.showMarqueeOnArticle }}` === 'true');
 			$('#tg_bot_token').val(`{{& tg_bot_token }}`); $('#tg_chat_id').val(`{{& tg_chat_id }}`);
+			$('#admin_comment_id').val(`{{& admin_comment_id }}`);
+			$('#comment_max_length').val(`{{& comment_max_length }}` || '500');
 			$('#xytk_api_url').val(`{{& xytk_api_url }}`); $('#xytk_api_key').val(`{{& xytk_api_key }}`);
 			$('#active_storage_node').val(`{{& active_storage_node }}` || 'r2');
 			const footerLinksContainer = $('#footer-links-container');
@@ -2203,7 +2224,18 @@ function loadComments() {
 		var configData = ['tg_bot_token','tg_chat_id','xytk_api_url','xytk_api_key','active_storage_node'].map(id => ({ name: id, value: $('#'+id).val().trim() }));
 		$.ajax({ type: "POST", dataType: "json", contentType: "application/json; charset=utf-8", url: "/admin/saveConfig/", data: JSON.stringify(configData), success: function () { alert("图片存储设置保存成功！"); }, error: function() { alert('保存失败'); } });
 	}
-
+	function saveCommentSettings() {
+		var configData = [
+			{ name: 'admin_comment_id', value: $('#admin_comment_id').val().trim() },
+			{ name: 'comment_max_length', value: $('#comment_max_length').val().trim() }
+		];
+		$.ajax({ 
+			type: "POST", dataType: "json", contentType: "application/json; charset=utf-8", 
+			url: "/admin/saveConfig/", data: JSON.stringify(configData), 
+			success: function () { alert("评论设置保存成功！"); }, 
+			error: function() { alert('保存失败'); } 
+		});
+	}
 	let allImages = [];
 	let filteredImages = [];
 	let currentImagePage = 1;
