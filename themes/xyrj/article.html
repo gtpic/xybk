@@ -69,6 +69,8 @@
         .comment-item { border-bottom: 1px solid #eee; padding: 15px 0; }
         .comment-item:last-child { border-bottom: none; }
         .comment-body p { margin: 0 0 10px; }
+		.comment-children { list-style: none; padding-left: 30px; margin-top: 15px; border-left: 2px solid #eaeaea; }
+        .comment-children .comment-item { padding: 10px 0 0 0; border-bottom: none; }
         .comment-meta { font-size: 12px; color: #888; }
         .comment-contact { margin-left: 10px; color: #555; font-style: italic; }
 
@@ -707,20 +709,20 @@ window.addEventListener('load', function() {
             document.getElementById('reply-info').style.display = 'none';
         });
 
-        // 1. 渲染评论列表的函数 (包含回复与博主标识)
+        // 1. 渲染评论列表的函数 (包含回复与博主标识，改为层级嵌套显示)
         function renderComments(comments) {
             commentList.innerHTML = ''; 
             if (comments.length === 0) { commentList.innerHTML = '<li class="comment-item">暂无评论</li>'; return; }
 
-            comments.forEach(comment => {
+            const commentMap = new Map();
+            // 先按照时间正序排序
+            const sortedComments = comments.sort((a, b) => a.timestamp - b.timestamp);
+
+            // 第一步：生成所有 DOM 节点，并保存到 Map
+            sortedComments.forEach(comment => {
                 const li = document.createElement('li'); li.className = 'comment-item'; li.id = `comment-${comment.id}`;
                 const commentBody = document.createElement('div'); commentBody.className = 'comment-body';
                 
-                if (comment.contact && comment.contact.replyToName) {
-                    const replyQuote = document.createElement('div'); replyQuote.className = 'reply-quote';
-                    replyQuote.innerHTML = `回复 <strong>@${comment.contact.replyToName}</strong>: ${comment.contact.replyContent || ''}`;
-                    commentBody.appendChild(replyQuote);
-                }
                 const commentContent = document.createElement('p'); commentContent.textContent = comment.content;
                 commentBody.appendChild(commentContent);
 
@@ -755,7 +757,26 @@ window.addEventListener('load', function() {
                     document.getElementById('comment-content').focus();
                 };
                 commentMeta.appendChild(replyBtn);
-                li.appendChild(commentBody); li.appendChild(commentMeta); commentList.appendChild(li);
+                li.appendChild(commentBody); li.appendChild(commentMeta);
+                
+                // 添加子评论容器
+                const childrenUl = document.createElement('ul'); childrenUl.className = 'comment-children'; childrenUl.id = `children-${comment.id}`;
+                li.appendChild(childrenUl);
+
+                commentMap.set(comment.id, { comment, li });
+            });
+
+            // 第二步：组装层级树结构
+            sortedComments.forEach(comment => {
+                const node = commentMap.get(comment.id);
+                if (comment.contact && comment.contact.replyToId && commentMap.has(comment.contact.replyToId)) {
+                    // 追加到父级评论的子容器中
+                    const parentNode = commentMap.get(comment.contact.replyToId);
+                    parentNode.li.querySelector('.comment-children').appendChild(node.li);
+                } else {
+                    // 如果是顶级评论，直接追加到主列表的最前面
+                    commentList.prepend(node.li);
+                }
             });
         }
 
@@ -843,11 +864,6 @@ window.addEventListener('load', function() {
                     const li = document.createElement('li'); li.className = 'comment-item'; li.id = `comment-${savedComment.id}`;
                     const commentBody = document.createElement('div'); commentBody.className = 'comment-body';
                     
-                    if (savedComment.contact && savedComment.contact.replyToName) {
-                        const replyQuote = document.createElement('div'); replyQuote.className = 'reply-quote';
-                        replyQuote.innerHTML = `回复 <strong>@${savedComment.contact.replyToName}</strong>: ${savedComment.contact.replyContent || ''}`;
-                        commentBody.appendChild(replyQuote);
-                    }
                     const commentContent = document.createElement('p'); commentContent.textContent = savedComment.content;
                     commentBody.appendChild(commentContent);
 
@@ -868,7 +884,23 @@ window.addEventListener('load', function() {
                         contactSpan.appendChild(document.createTextNode(savedComment.contact.value));
                         commentMeta.appendChild(contactSpan);
                     }
-                    li.appendChild(commentBody); li.appendChild(commentMeta); commentList.prepend(li);
+                    li.appendChild(commentBody); li.appendChild(commentMeta);
+                    
+                    // 准备子评论容器（以便别人回复该条新评论）
+                    const childrenUl = document.createElement('ul'); childrenUl.className = 'comment-children'; childrenUl.id = `children-${savedComment.id}`;
+                    li.appendChild(childrenUl);
+
+                    // 插入到正确的位置（判断是否为回复某人）
+                    if (savedComment.contact && savedComment.contact.replyToId) {
+                        const parentUl = document.getElementById(`children-${savedComment.contact.replyToId}`);
+                        if (parentUl) {
+                            parentUl.appendChild(li); // 子评论追加到父评论下方
+                        } else {
+                            commentList.prepend(li); // 容错：若没找到父级，则放最前
+                        }
+                    } else {
+                        commentList.prepend(li); // 顶级评论直接放最前面
+                    }
 
                     // --- START: Clear inputs and regenerate captcha ---
                     commentContentInput.value = ''; // 清空评论框
