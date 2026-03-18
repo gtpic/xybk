@@ -621,19 +621,19 @@ async function handleRequest({ request, env, ctx }) {
             if (newComment.content && newComment.content.length > maxLength) {
                 return new Response(JSON.stringify({error: "评论字数超出限制"}), { status: 400 });
             }
+            // 核心修复：在打码前，先提取真实的原始号码保存到 dbContact 变量中
+            const dbContact = JSON.stringify(newComment.contact || {});
+            
             if (configs["admin_comment_id"] && newComment.contact && newComment.contact.value === configs["admin_comment_id"]) {
                 newComment.isAdmin = true; // 后端确认为博主
             } else if (newComment.contact && newComment.contact.value && newComment.contact.value.length > 2) {
-                newComment.contact.value = newComment.contact.value.substring(0, 2) + '*'.repeat(newComment.contact.value.length - 2); // 访客打码处理
-            }
-            const dbContact = JSON.stringify(newComment.contact); // 提取打码前的原始数据
-            if (configs["admin_comment_id"] && newComment.contact && newComment.contact.value === configs["admin_comment_id"]) {
-                newComment.isAdmin = true; // 后端确认为博主
-            } else if (newComment.contact && newComment.contact.value && newComment.contact.value.length > 2) {
-                newComment.contact.value = newComment.contact.value.substring(0, 2) + '*'.repeat(newComment.contact.value.length - 2); // 访客打码处理，只用于返回前台
+                // 仅对当前返回给前端的对象打上星号，防止抓包
+                newComment.contact.value = newComment.contact.value.substring(0, 2) + '*'.repeat(newComment.contact.value.length - 2); 
             }
             const cid = crypto.randomUUID();
-            newComment.id = cid; // 确保新评论自带ID以便前台操作
+            newComment.id = cid;
+            
+            // 写入数据库时，使用带有完整号码的 dbContact 变量
             await env.db.prepare("INSERT INTO comments (id, articleSlug, content, contact, timestamp) VALUES (?, ?, ?, ?, ?)")
                 .bind(cid, articleSlug, newComment.content, dbContact, newComment.timestamp).run();
 			return new Response(JSON.stringify(newComment), { status: 201, headers: { 'Content-Type': 'application/json' } });
