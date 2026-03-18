@@ -151,6 +151,8 @@ async function handleRequest({ request, env, ctx }) {
 				data["mobile_header_bg"] = configs["mobile_header_bg"] || '';
                 data["tg_bot_token"] = configs["tg_bot_token"] || ''; data["tg_chat_id"] = configs["tg_chat_id"] || '';
 				data["xytk_api_url"] = configs["xytk_api_url"] || ''; data["xytk_api_key"] = configs["xytk_api_key"] || '';
+                data["admin_comment_id"] = configs["admin_comment_id"] || ''; 
+				data["comment_max_length"] = configs["comment_max_length"] || '500';
                 data["active_storage_node"] = configs["active_storage_node"] || 'r2';
                 if (configs["showSiteNameInHeader"] === 'false') {
                     data["showSiteNameInHeader_false"] = true;
@@ -624,9 +626,16 @@ async function handleRequest({ request, env, ctx }) {
             } else if (newComment.contact && newComment.contact.value && newComment.contact.value.length > 2) {
                 newComment.contact.value = newComment.contact.value.substring(0, 2) + '*'.repeat(newComment.contact.value.length - 2); // 访客打码处理
             }
+            const dbContact = JSON.stringify(newComment.contact); // 提取打码前的原始数据
+            if (configs["admin_comment_id"] && newComment.contact && newComment.contact.value === configs["admin_comment_id"]) {
+                newComment.isAdmin = true; // 后端确认为博主
+            } else if (newComment.contact && newComment.contact.value && newComment.contact.value.length > 2) {
+                newComment.contact.value = newComment.contact.value.substring(0, 2) + '*'.repeat(newComment.contact.value.length - 2); // 访客打码处理，只用于返回前台
+            }
             const cid = crypto.randomUUID();
+            newComment.id = cid; // 确保新评论自带ID以便前台操作
             await env.db.prepare("INSERT INTO comments (id, articleSlug, content, contact, timestamp) VALUES (?, ?, ?, ?, ?)")
-                .bind(cid, articleSlug, newComment.content, JSON.stringify(newComment.contact), newComment.timestamp).run();
+                .bind(cid, articleSlug, newComment.content, dbContact, newComment.timestamp).run();
 			return new Response(JSON.stringify(newComment), { status: 201, headers: { 'Content-Type': 'application/json' } });
 		}
 		else if (pathname.startsWith('/api/comments/') && request.method === 'DELETE') {
