@@ -479,8 +479,9 @@ recentComments.forEach(comment => {
                 const metaSpan = document.createElement('span');
                 metaSpan.style.fontSize = '12px';
                 metaSpan.style.color = '#888';
-
-                if (comment.contact && comment.contact.value) {
+                if (comment.isAdmin) {
+                    metaSpan.innerHTML = '<span class="admin-badge" style="background-color: #ff4757; color: white; padding: 2px 6px; border-radius: 3px; font-size: 12px; margin-left: 5px; vertical-align: middle;"><i class="fas fa-check-circle"></i> 博主</span>';
+                } else if (comment.contact && comment.contact.value) {
                     let typeLabel = '联系';
                     switch(comment.contact.type) {
                         case 'email': typeLabel = '邮箱'; break;
@@ -492,7 +493,6 @@ recentComments.forEach(comment => {
                 } else {
                     metaSpan.textContent = '[匿名]';
                 }
-
                 // --- 修改 Appending 逻辑 ---
                 // 将内容和元信息添加到 <a> 标签中
                 link.appendChild(contentP);
