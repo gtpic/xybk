@@ -598,9 +598,13 @@ async function handleRequest({ request, env, ctx }) {
 		else if (pathname.startsWith('/api/comments/') && request.method === 'GET') {
 			const articleSlug = pathname.split('/')[3]; 
             const { results } = await env.db.prepare("SELECT * FROM comments WHERE articleSlug = ? ORDER BY timestamp ASC").bind(articleSlug).all();
+			const configs = await getConfigs(env);
+            const adminId = configs["admin_comment_id"];
 			const safeComments = results.map(comment => {
 				let processed = { ...comment, contact: JSON.parse(comment.contact || '{}') };
-				if (processed.contact && processed.contact.value && processed.contact.value.length > 2) {
+				if (adminId && processed.contact && processed.contact.value === adminId) {
+					processed.isAdmin = true;
+				} else if (processed.contact && processed.contact.value && processed.contact.value.length > 2) {
 					processed.contact.value = processed.contact.value.substring(0, 2) + '*'.repeat(processed.contact.value.length - 2);
 				}
 				return processed;
@@ -610,6 +614,16 @@ async function handleRequest({ request, env, ctx }) {
 		else if (pathname.startsWith('/api/comments/') && request.method === 'POST') {
 			const articleSlug = pathname.split('/')[3];
 			let newComment = await request.json();
+			const configs = await getConfigs(env);
+            const maxLength = parseInt(configs["comment_max_length"] || "500");
+            if (newComment.content && newComment.content.length > maxLength) {
+                return new Response(JSON.stringify({error: "评论字数超出限制"}), { status: 400 });
+            }
+            if (configs["admin_comment_id"] && newComment.contact && newComment.contact.value === configs["admin_comment_id"]) {
+                newComment.isAdmin = true; // 后端确认为博主
+            } else if (newComment.contact && newComment.contact.value && newComment.contact.value.length > 2) {
+                newComment.contact.value = newComment.contact.value.substring(0, 2) + '*'.repeat(newComment.contact.value.length - 2); // 访客打码处理
+            }
             const cid = crypto.randomUUID();
             await env.db.prepare("INSERT INTO comments (id, articleSlug, content, contact, timestamp) VALUES (?, ?, ?, ?, ?)")
                 .bind(cid, articleSlug, newComment.content, JSON.stringify(newComment.contact), newComment.timestamp).run();
@@ -622,9 +636,13 @@ async function handleRequest({ request, env, ctx }) {
 		}
 		else if (pathname === '/api/comments_all' && request.method === 'GET') {
 			const { results } = await env.db.prepare("SELECT * FROM comments ORDER BY timestamp DESC LIMIT 50").all();
+			const configs = await getConfigs(env);
+            const adminId = configs["admin_comment_id"];
 			const allComments = results.map(c => {
 				let processed = { ...c, contact: JSON.parse(c.contact || '{}') };
-				if (processed.contact && processed.contact.value && processed.contact.value.length > 2) {
+				if (adminId && processed.contact && processed.contact.value === adminId) {
+					processed.isAdmin = true;
+				} else if (processed.contact && processed.contact.value && processed.contact.value.length > 2) {
 					processed.contact.value = processed.contact.value.substring(0, 2) + '*'.repeat(processed.contact.value.length - 2);
 				}
 				return processed;
