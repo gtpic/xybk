@@ -630,6 +630,21 @@
 									<label for="comment_max_length">评论最大字数：</label>
 									<input type="number" class="form-control" id="comment_max_length" placeholder="默认 500" style="width: 120px;">
 								</div>
+								<div style="width: 100%; border-top: 1px dashed #eee; margin: 15px 0; padding-top: 15px;">
+                                    <div class="form-group" style="margin-right: 20px; margin-bottom: 10px; display: block;">
+                                        <label style="font-weight: bold; margin-bottom: 10px; display: block;">
+                                            <input type="checkbox" id="tg_notify_enable" style="margin-right: 5px; vertical-align: middle;"> 开启 Telegram 新评论独立提醒
+                                        </label>
+                                        <div style="display: inline-block; margin-right: 15px; margin-bottom: 10px;">
+                                            <label for="tg_notify_bot_token" style="font-weight: normal; font-size: 13px;">独立 Bot Token：</label>
+                                            <input type="password" class="form-control" id="tg_notify_bot_token" placeholder="专用于接收提醒的Bot" style="width: 250px;">
+                                        </div>
+                                        <div style="display: inline-block;">
+                                            <label for="tg_notify_chat_id" style="font-weight: normal; font-size: 13px;">独立 Chat ID：</label>
+                                            <input type="text" class="form-control" id="tg_notify_chat_id" placeholder="接收提醒的 Chat ID" style="width: 200px;">
+                                        </div>
+                                    </div>
+                                </div>
 								<button type="button" class="btn btn-primary" onclick="saveCommentSettings()" style="vertical-align: top;">
 									<i class="fas fa-save"></i> 保存设置
 								</button>
@@ -1212,6 +1227,9 @@ tinymce.init({
 			$('#tg_bot_token').val(`{{& tg_bot_token }}`); $('#tg_chat_id').val(`{{& tg_chat_id }}`);
 			$('#admin_comment_id').val(`{{& admin_comment_id }}`);
 			$('#comment_max_length').val(`{{& comment_max_length }}` || '500');
+			$('#tg_notify_enable').prop('checked', `{{& tg_notify_enable }}` === 'true');
+			$('#tg_notify_bot_token').val(`{{& tg_notify_bot_token }}`);
+			$('#tg_notify_chat_id').val(`{{& tg_notify_chat_id }}`);
 			$('#xytk_api_url').val(`{{& xytk_api_url }}`); $('#xytk_api_key').val(`{{& xytk_api_key }}`);
 			$('#active_storage_node').val(`{{& active_storage_node }}` || 'r2');
 			const footerLinksContainer = $('#footer-links-container');
@@ -2240,6 +2258,9 @@ function loadComments() {
 		var configData = [
 			{ name: 'admin_comment_id', value: $('#admin_comment_id').val().trim() },
 			{ name: 'comment_max_length', value: $('#comment_max_length').val().trim() }
+			{ name: 'tg_notify_enable', value: $('#tg_notify_enable').is(':checked') ? 'true' : 'false' },
+			{ name: 'tg_notify_bot_token', value: $('#tg_notify_bot_token').val().trim() },
+			{ name: 'tg_notify_chat_id', value: $('#tg_notify_chat_id').val().trim() }
 		];
 		$.ajax({ 
 			type: "POST", dataType: "json", contentType: "application/json; charset=utf-8", 
