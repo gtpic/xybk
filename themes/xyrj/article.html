@@ -325,7 +325,7 @@
                                     </ul>
                                 </div>
                                 <input type="hidden" id="contact-type" name="contact-type" value="email">
-                                <input type="text" id="contact-value" name="contact-value" placeholder="请输入联系方式">
+								<input type="text" id="contact-value" name="contact-value" placeholder="请输入联系方式" required>
                             </p>
                             <p class="comment-form-captcha">
                                 <label for="captcha-input">验证: <span id="captcha-question" style="font-weight: bold; color: #333; margin: 0 5px;"></span> = ?</label>
@@ -831,16 +831,20 @@ window.addEventListener('load', function() {
                     captchaInputEl.value = ''; // 清空输入
                     return;
                 }
-                // --- END: New Validation ---
-
                 if (!content) {
                     alert('评论内容不能为空');
                     return;
                 }
-
-                const contactType = contactTypeEl.value; const contactValue = contactValueEl.value.trim();
+                const contactType = contactTypeEl.value; 
+                const contactValue = contactValueEl.value.trim();         
+                if (!contactValue) {
+                    alert('请填写联系方式！');
+                    document.getElementById('contact-value').focus();
+                    return;
+                }
                 const newComment = { content: content, timestamp: Date.now(), contact: {} };
-                if (contactValue) { newComment.contact.type = contactType; newComment.contact.value = contactValue; }
+                newComment.contact.type = contactType; 
+                newComment.contact.value = contactValue;
                 if (currentReplyId) {
                     newComment.contact.replyToId = currentReplyId;
                     newComment.contact.replyToName = currentReplyName;
