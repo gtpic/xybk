@@ -608,6 +608,12 @@
 					<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom" style="padding-bottom: 9px !important; margin-bottom: 1rem !important; border-bottom: 1px solid #eee !important;">
 						<h3>评论管理</h3>
 					</div>
+					<ul class="nav nav-tabs" style="margin-bottom: 15px;">
+						<li class="active"><a data-toggle="tab" href="#comments-list-tab">所有评论</a></li>
+						<li><a data-toggle="tab" href="#comments-settings-tab">评论基础设置</a></li>
+					</ul>
+					<div class="tab-content">
+						<div id="comments-settings-tab" class="tab-pane fade">
 					<div class="panel panel-default" style="margin-top: 15px;">
 						<div class="panel-heading">评论基础设置</div>
 						<div class="panel-body">
@@ -627,6 +633,7 @@
 							</form>
 						</div>
 					</div>
+					</div> <div id="comments-list-tab" class="tab-pane fade in active">
 					<div class="form-group" style="margin-bottom: 15px; margin-top: 15px; display: flex; align-items: center; flex-wrap: wrap;">
 						<label style="margin: 0 15px 0 0; display: flex; align-items: center; cursor: pointer; font-weight: normal;">
 							<input type="checkbox" id="select-all-comments" style="margin-right: 5px;"> 全选
@@ -671,12 +678,14 @@
 							</div>
 							<div class="page-info" id="comment-page-info">共 0 条数据，第 1 / 1 页</div>
 							<div class="page-buttons">
-								<button id="comment-prev-page" class="btn btn-default" disabled="">« 上一页</button>
+								<button id="comment-prev-page" class="btn btn-default" disabled="">&laquo; 上一页</button>
 								<span class="page-numbers" id="comment-page-numbers"></span>
-								<button id="comment-next-page" class="btn btn-default">下一页 »</button>
+								<button id="comment-next-page" class="btn btn-default">下一页 &raquo;</button>
 							</div>
 						</div>
 					</div>
+					</div> 
+				</div> 
 				</div>
 			</div>
 			<div class="tab-pane fade" id="carousel-manager">
