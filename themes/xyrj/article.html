@@ -27,18 +27,18 @@
         .breadcrumb-with-marquee .breadcrumb { margin-bottom: 0; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         /* ================= 评论区表单布局 ================= */
-        .comment-form { margin-top: 20px; }
-        .comment-form p { margin: 10px 0; }
-        .comment-form label { margin-right: 5px; font-size: 14px; color: #555; vertical-align: middle; }
-        .comment-form textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; min-height: 100px; }
+        .xy-comment-form { margin-top: 20px; }
+        .xy-comment-form p { margin: 10px 0; }
+        .xy-comment-form label { margin-right: 5px; font-size: 14px; color: #555; vertical-align: middle; }
+        .xy-comment-form textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; min-height: 100px; }
         
         /* 底部同行排列 */
-        .comment-form-bottom-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; margin-top: 10px; }
-        .comment-form-bottom-row p { margin: 5px 0px; }
-        .comment-form-bottom-row .form-submit { margin-right: 0; margin-top: 5px; }
+        .xy-comment-form-bottom-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; margin-top: 10px; }
+        .xy-comment-form-bottom-row p { margin: 5px 0px; }
+        .xy-comment-form-bottom-row .form-submit { margin-right: 0; margin-top: 5px; }
 
         /* 统一输入框与按钮的尺寸及对齐基准 */
-        #contact-value, #captcha-input, .custom-select-trigger, .comment-form-bottom-row .submit {
+        #xy-contact-value, #xy-captcha-input, .xy-custom-select-trigger, .xy-comment-form-bottom-row .xy-submit {
             height: 36px;
             box-sizing: border-box;
             vertical-align: middle;
@@ -49,30 +49,30 @@
         }
 
         /* 个性化输入框与按钮样式 */
-        #contact-value { width: 130px; padding: 0 10px; margin: 5px 10px 5px 0; }
-        #contact-value:focus { border-color: #aaa; }
-        #captcha-input { padding: 0 10px; margin-right: 15px; width: 60px; }
-        .comment-form .submit { background-color: #333; color: #fff; border: none; padding: 0 20px; cursor: pointer; font-size: 14px; }
-        .comment-form .submit:hover { background-color: #555; }
+        #xy-contact-value { width: 130px; padding: 0 10px; margin: 5px 10px 5px 0; }
+        #xy-contact-value:focus { border-color: #aaa; }
+        #xy-captcha-input { padding: 0 10px; margin-right: 15px; width: 60px; }
+        .xy-comment-form .xy-submit { background-color: #333; color: #fff; border: none; padding: 0 20px; cursor: pointer; font-size: 14px; }
+        .xy-comment-form .xy-submit:hover { background-color: #555; }
 
         /* ================= 自定义下拉菜单 ================= */
-        .custom-select-wrapper { margin: 5px 5px 5px 0; position: relative; display: inline-block; user-select: none; }
-        .custom-select-trigger { padding: 0 10px; background: #fff; display: flex; align-items: center; justify-content: space-between; cursor: pointer; min-width: 90px; }
-        .custom-select-trigger i { margin-left: 8px; font-size: 12px; color: #888; }
-        .custom-options { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 0; list-style: none; z-index: 100; display: none; }
-        .custom-options.open { display: block; }
-        .custom-options li { padding: 8px 10px; cursor: pointer; font-size: 14px; color: #555; -webkit-tap-highlight-color: transparent; }
-        .custom-options li:hover { background: #f5f5f5; }
+        .xy-custom-select-wrapper { margin: 5px 5px 5px 0; position: relative; display: inline-block; user-select: none; }
+        .xy-custom-select-trigger { padding: 0 10px; background: #fff; display: flex; align-items: center; justify-content: space-between; cursor: pointer; min-width: 90px; }
+        .xy-custom-select-trigger i { margin-left: 8px; font-size: 12px; color: #888; }
+        .xy-custom-options { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 0; list-style: none; z-index: 100; display: none; }
+        .xy-custom-options.open { display: block; }
+        .xy-custom-options li { padding: 8px 10px; cursor: pointer; font-size: 14px; color: #555; -webkit-tap-highlight-color: transparent; }
+        .xy-custom-options li:hover { background: #f5f5f5; }
 
         /* ================= 评论列表内容 ================= */
-        .comment-list { list-style: none; padding: 0; margin-top: 20px; }
-        .comment-item { border-bottom: 1px solid #eee; padding: 15px 0; }
-        .comment-item:last-child { border-bottom: none; }
-        .comment-body p { margin: 0 0 10px; }
-		.comment-children { list-style: none; padding-left: 30px; margin-top: 15px; border-left: 2px solid #eaeaea; }
-        .comment-children .comment-item { padding: 10px 0 0 0; border-bottom: none; }
-        .comment-meta { font-size: 12px; color: #888; }
-        .comment-contact { margin-left: 10px; color: #555; font-style: italic; }
+        .xy-comment-list { list-style: none; padding: 0; margin-top: 20px; }
+        .xy-comment-item { border-bottom: 1px solid #eee; padding: 15px 0; }
+        .xy-comment-item:last-child { border-bottom: none; }
+        .xy-comment-body p { margin: 0 0 10px; }
+		.xy-comment-children { list-style: none; padding-left: 30px; margin-top: 15px; border-left: 2px solid #eaeaea; }
+        .xy-comment-children .xy-comment-item { padding: 10px 0 0 0; border-bottom: none; }
+        .xy-comment-meta { font-size: 12px; color: #888; }
+        .xy-comment-contact { margin-left: 10px; color: #555; font-style: italic; }
 
         /* ================= 文章加密 ================= */
         .entry-content-protected { border: 2px dashed #ffc107; background: #fff9e6; padding: 20px; border-radius: 5px; text-align: center; margin: 20px 0; }
@@ -95,12 +95,12 @@
         }
         .entry-tag { display: flex; flex-wrap: wrap; align-items: center; }
         .entry-tag a { max-width: 100%; white-space: normal; word-break: break-all; margin-bottom: 5px; }
-        .comment-reply-btn { margin-left: 15px; cursor: pointer; color: #007bff; font-size: 13px; text-decoration: none; }
-        .comment-reply-btn:hover { text-decoration: underline; color: #0056b3; }
-        .reply-quote { background: #f5f5f5; border-left: 3px solid #ddd; padding: 8px 12px; font-size: 13px; color: #666; margin-bottom: 10px; border-radius: 2px; }
-        #reply-info { display: none; background: #f0f7ff; border-left: 3px solid #007bff; padding: 8px 12px; margin-bottom: 15px; font-size: 13px; border-radius: 3px; }
-        #cancel-reply { float: right; color: #d9534f; cursor: pointer; text-decoration: none; }
-        .admin-badge { background-color: #ff4757; color: white; padding: 2px 6px; border-radius: 3px; font-size: 12px; margin-left: 5px; vertical-align: middle; }
+        .xy-comment-reply-btn { margin-left: 15px; cursor: pointer; color: #007bff; font-size: 13px; text-decoration: none; }
+        .xy-comment-reply-btn:hover { text-decoration: underline; color: #0056b3; }
+        .xy-reply-quote { background: #f5f5f5; border-left: 3px solid #ddd; padding: 8px 12px; font-size: 13px; color: #666; margin-bottom: 10px; border-radius: 2px; }
+        #xy-reply-info { display: none; background: #f0f7ff; border-left: 3px solid #007bff; padding: 8px 12px; margin-bottom: 15px; font-size: 13px; border-radius: 3px; }
+        #xy-cancel-reply { float: right; color: #d9534f; cursor: pointer; text-decoration: none; }
+        .xy-admin-badge { background-color: #ff4757; color: white; padding: 2px 6px; border-radius: 3px; font-size: 12px; margin-left: 5px; vertical-align: middle; }
     </style>
     </head>
 <body class="m-flex"> 
@@ -298,50 +298,50 @@
                         </div>
                 </div>
                 {{#articleSingle.allowComments}}
-                <div id="comments" class="entry-comments entry-card">
+                <div id="xy-comments" class="xy-entry-comments entry-card">
                     <h3 class="widget-title">发表评论</h3>
-                    <form id="comment-form" class="comment-form">
-						<div id="reply-info">
-                            正在回复 <strong>@<span id="reply-target-name"></span></strong> 的评论
-                            <a id="cancel-reply">取消回复</a>
+                    <form id="xy-comment-form" class="xy-comment-form">
+						<div id="xy-reply-info">
+                            正在回复 <strong>@<span id="xy-reply-target-name"></span></strong> 的评论
+                            <a id="xy-cancel-reply">取消回复</a>
                         </div>
                         <p class="comment-form-comment">
-                            <textarea id="comment-content" name="content" cols="45" rows="5" required placeholder="请输入评论..."></textarea>
+                            <textarea id="xy-comment-content" name="content" cols="45" rows="5" required placeholder="请输入评论..."></textarea>
                         </p>
                         
-                        <div class="comment-form-bottom-row">
+                        <div class="xy-comment-form-bottom-row">
                             <p class="comment-form-contact">
-                                <label for="contact-type">联系方式:</label>
-                                <div class="custom-select-wrapper">
-                                    <div class="custom-select-trigger" id="custom-contact-trigger">
-                                        <span id="custom-contact-text">邮箱</span>
+                                <label for="xy-contact-type">联系方式:</label>
+                                <div class="xy-custom-select-wrapper">
+                                    <div class="xy-custom-select-trigger" id="xy-custom-contact-trigger">
+                                        <span id="xy-custom-contact-text">邮箱</span>
                                         <i class="fal fa-angle-down"></i>
                                     </div>
-                                    <ul class="custom-options" id="custom-contact-options">
+                                    <ul class="xy-custom-options" id="xy-custom-contact-options">
                                         <li data-value="email">邮箱</li>
                                         <li data-value="QQ">QQ</li>
                                         <li data-value="wechat">微信</li>
                                         <li data-value="telegram">Telegram</li>
                                     </ul>
                                 </div>
-                                <input type="hidden" id="contact-type" name="contact-type" value="email">
-								<input type="text" id="contact-value" name="contact-value" placeholder="请输入联系方式" required>
+                                <input type="hidden" id="xy-contact-type" name="contact-type" value="email">
+								<input type="text" id="xy-contact-value" name="contact-value" placeholder="请输入联系方式" required>
                             </p>
                             <p class="comment-form-captcha">
-                                <label for="captcha-input">验证: <span id="captcha-question" style="font-weight: bold; color: #333; margin: 0 5px;"></span> = ?</label>
-                                <input type="text" id="captcha-input" name="captcha" required>
-                                <input type="hidden" id="captcha-answer"> </p>
+                                <label for="xy-captcha-input">验证: <span id="xy-captcha-question" style="font-weight: bold; color: #333; margin: 0 5px;"></span> = ?</label>
+                                <input type="text" id="xy-captcha-input" name="captcha" required>
+                                <input type="hidden" id="xy-captcha-answer"> </p>
                             
                             <p class="form-submit">
-                                <button name="submit" type="submit" id="submit" class="submit">提交评论</button>
+                                <button name="submit" type="submit" id="xy-submit" class="xy-submit">提交评论</button>
                             </p>
 
                         </div>
                         </form>
             
-                    <h3 class="widget-title" id="comments-title" style="margin-top: 30px;">评论列表</h3>
-                    <ul id="comment-list" class="comment-list">
-                        <li class="comment-item">正在加载评论...</li>
+                    <h3 class="widget-title" id="xy-comments-title" style="margin-top: 30px;">评论列表</h3>
+                    <ul id="xy-comment-list" class="xy-comment-list">
+                        <li class="xy-comment-item">正在加载评论...</li>
                     </ul>
                 </div>
 				{{/articleSingle.allowComments}}
@@ -563,22 +563,20 @@ window.addEventListener('load', function() {
         }
         // ========== END: 新增密码表单逻辑 ==========
         // --- START: New Comment Logic ---
-        const articleId = '{{ &articleSingle.id }}'; // 从Mustache模板获取文章ID
-        const commentForm = document.getElementById('comment-form');
-        const commentList = document.getElementById('comment-list');
-        const commentContentInput = document.getElementById('comment-content');
+        const articleId = '{{ &articleSingle.id }}'; 
+        const commentForm = document.getElementById('xy-comment-form');
+        const commentList = document.getElementById('xy-comment-list');
+        const commentContentInput = document.getElementById('xy-comment-content');
         
-        // --- START: New Captcha/Contact Elements ---
-        const contactTypeEl = document.getElementById('contact-type');
-        const contactValueEl = document.getElementById('contact-value');
-        const captchaQuestionEl = document.getElementById('captcha-question');
-        const captchaInputEl = document.getElementById('captcha-input');
-        const captchaAnswerEl = document.getElementById('captcha-answer');
-        // --- END: New Captcha/Contact Elements ---
-		// --- START: 自定义下拉框 JS 逻辑 ---
-        const customTrigger = document.getElementById('custom-contact-trigger');
-        const customOptions = document.getElementById('custom-contact-options');
-        const customText = document.getElementById('custom-contact-text');
+        const contactTypeEl = document.getElementById('xy-contact-type');
+        const contactValueEl = document.getElementById('xy-contact-value');
+        const captchaQuestionEl = document.getElementById('xy-captcha-question');
+        const captchaInputEl = document.getElementById('xy-captcha-input');
+        const captchaAnswerEl = document.getElementById('xy-captcha-answer');
+        
+        const customTrigger = document.getElementById('xy-custom-contact-trigger');
+        const customOptions = document.getElementById('xy-custom-contact-options');
+        const customText = document.getElementById('xy-custom-contact-text');
         
         if (customTrigger && customOptions) {
             customTrigger.addEventListener('click', function(e) {
@@ -588,263 +586,169 @@ window.addEventListener('load', function() {
             customOptions.querySelectorAll('li').forEach(function(item) {
                 item.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    customText.textContent = this.textContent; // 改变显示的文字
-                    contactTypeEl.value = this.getAttribute('data-value'); // 改变隐藏输入框的值给提交用
+                    customText.textContent = this.textContent; 
+                    contactTypeEl.value = this.getAttribute('data-value'); 
                     customOptions.classList.remove('open');
                 });
             });
-            document.addEventListener('click', function() {
-                customOptions.classList.remove('open');
-            });
-            window.addEventListener('scroll', function() {
-                customOptions.classList.remove('open');
-            }, { passive: true });
-            document.addEventListener('touchmove', function() {
-                customOptions.classList.remove('open');
-            }, { passive: true });
+            document.addEventListener('click', function() { customOptions.classList.remove('open'); });
+            window.addEventListener('scroll', function() { customOptions.classList.remove('open'); }, { passive: true });
+            document.addEventListener('touchmove', function() { customOptions.classList.remove('open'); }, { passive: true });
         }
-        // --- END: 自定义下拉框 JS 逻辑 ---
-        // --- START: New Captcha Function ---
+
         function generateCaptcha() {
-            const num1 = Math.floor(Math.random() * 10) + 1; // 1-10
-            const num2 = Math.floor(Math.random() * 10) + 1; // 1-10
+            const num1 = Math.floor(Math.random() * 10) + 1; 
+            const num2 = Math.floor(Math.random() * 10) + 1; 
             const answer = num1 + num2;
 
-            if(captchaQuestionEl) {
-                captchaQuestionEl.textContent = `${num1} + ${num2}`;
-            }
-            if(captchaAnswerEl) {
-                captchaAnswerEl.value = answer.toString();
-            }
+            if(captchaQuestionEl) captchaQuestionEl.textContent = `${num1} + ${num2}`;
+            if(captchaAnswerEl) captchaAnswerEl.value = answer.toString();
         }
-        // --- END: New Captcha Function ---
-		function renderSidebarComments(comments) {
-            // 1. 找到侧边栏的 ul 列表
-            const sidebarList = document.getElementById('widget-recent-comments-list');
-            if (!sidebarList) return; // 如果此页面没有侧边栏模块，则退出
 
-            // 2. 清空 "正在加载..."
-            sidebarList.innerHTML = '';
-
-            // 3. 检查是否有评论
-            if (!comments || comments.length === 0) {
-                sidebarList.innerHTML = '<li>暂无评论</li>';
-                return;
-            }
-
-            // 4. 只截取最新的 5 条评论
-            const recentComments = comments.slice(0, 5);
-
-            // 5. 遍历并生成 HTML
-            recentComments.forEach(comment => {
-                const li = document.createElement('li');
-                li.style.borderBottom = '1px solid #eee'; 
-                li.style.padding = '10px 0';
-
-                // --- START: 新增跳转链接 ---
-                // 1. 创建 <a> 标签
-                const link = document.createElement('a');
-                
-                // 2. 构造 URL。
-                // comment.articleSlug 是文章ID
-                // comment.id 是评论的唯一ID
-                // article.html 中的评论列表项 <li> ID 格式为 "comment-..."
-                // 最终 URL: /article/ARTICLE_ID/#comment-COMMENT_ID
-                link.href = `/article/${comment.articleSlug}/#comment-${comment.id}`;
-
-                // 3. 添加样式，使其看起来像普通文本
-                link.style.textDecoration = 'none';
-                link.style.color = 'inherit'; // 继承父元素的颜色
-                link.style.display = 'block'; // 使其成为块级元素以便点击
-                // --- END: 新增跳转链接 ---
-
-                // --- 评论内容 ---
-                const contentP = document.createElement('p');
-                contentP.style.marginBottom = '5px';
-                contentP.textContent = comment.content;
-                
-                // --- 评论元信息 (联系方式) ---
-                const metaSpan = document.createElement('span');
-                metaSpan.style.fontSize = '12px';
-                metaSpan.style.color = '#888';
-
-                if (comment.isAdmin) {
-                    metaSpan.innerHTML = '<span class="admin-badge" style="background-color: #ff4757; color: white; padding: 2px 6px; border-radius: 3px; font-size: 12px; margin-left: 5px; vertical-align: middle;"><i class="fas fa-check-circle"></i> 博主</span>';
-                } else if (comment.contact && comment.contact.value) {
-                    let typeLabel = '联系';
-                    switch(comment.contact.type) {
-                        case 'email': typeLabel = '邮箱'; break;
-                        case 'QQ': typeLabel = 'QQ'; break;
-                        case 'wechat': typeLabel = '微信'; break;
-                        case 'telegram': typeLabel = 'Telegram'; break;
-                    }
-                    metaSpan.textContent = `[${typeLabel}]: ${comment.contact.value}`;
-                } else {
-                    metaSpan.textContent = '[匿名]';
-                }
-
-                // --- 修改 Appending 逻辑 ---
-                // 将内容和元信息添加到 <a> 标签中
-                link.appendChild(contentP);
-                link.appendChild(metaSpan);
-                
-                // 将 <a> 标签添加到 <li> 中
-                li.appendChild(link);
-                
-                // 将 <li> 添加到列表中
-                sidebarList.appendChild(li);
-            });
+        // ================= 新增：统一获取评论者信息的辅助函数 (代码复用) =================
+        function getCommenterInfo(comment) {
+            let name = '匿名';
+            let html = '<span class="xy-comment-contact">[匿名]</span>';
             
-            // 移除最后一条评论的底部分隔线
-            if(sidebarList.lastChild) {
-                sidebarList.lastChild.style.borderBottom = 'none';
+            if (comment.isAdmin) {
+                name = '博主';
+                html = '<span class="xy-admin-badge" style="background-color: #ff4757; color: white; padding: 2px 6px; border-radius: 3px; font-size: 12px; margin-left: 5px; vertical-align: middle;"><i class="fas fa-check-circle"></i> 博主</span>';
+            } else if (comment.contact && comment.contact.value) {
+                name = comment.contact.value;
+                let typeLabel = '联系';
+                switch(comment.contact.type) { case 'email': typeLabel='邮箱'; break; case 'QQ': typeLabel='QQ'; break; case 'wechat': typeLabel='微信'; break; case 'telegram': typeLabel='Telegram'; break; }
+                html = `<span class="xy-comment-contact"> [${typeLabel}]: ${name}</span>`;
             }
+            return { name, html };
         }
-        // --- END: 新增函数 ---
 
-        // 1. 渲染评论列表的函数
+		function renderSidebarComments(comments) {
+            const sidebarList = document.getElementById('widget-recent-comments-list');
+            if (!sidebarList) return; 
+            sidebarList.innerHTML = '';
+            if (!comments || comments.length === 0) { sidebarList.innerHTML = '<li>暂无评论</li>'; return; }
+            
+            comments.slice(0, 5).forEach(comment => {
+                const li = document.createElement('li');
+                li.style.borderBottom = '1px solid #eee'; li.style.padding = '10px 0';
+                
+                const link = document.createElement('a');
+                link.href = `/article/${comment.articleSlug}/#xy-comment-${comment.id}`;
+                link.style.textDecoration = 'none'; link.style.color = 'inherit'; link.style.display = 'block'; 
+                
+                const contentP = document.createElement('p');
+                contentP.style.marginBottom = '5px'; contentP.textContent = comment.content;
+                
+                const metaSpan = document.createElement('span');
+                metaSpan.style.fontSize = '12px'; metaSpan.style.color = '#888';
+                metaSpan.innerHTML = getCommenterInfo(comment).html; // 极大精简：直接调用辅助函数
+
+                link.appendChild(contentP); link.appendChild(metaSpan);
+                li.appendChild(link); sidebarList.appendChild(li);
+            });
+            if(sidebarList.lastChild) sidebarList.lastChild.style.borderBottom = 'none';
+        }
+
         let currentReplyId = null; let currentReplyName = null; let currentReplyContent = null;
-        document.getElementById('cancel-reply').addEventListener('click', function() {
-            currentReplyId = currentReplyName = currentReplyContent = null;
-            document.getElementById('reply-info').style.display = 'none';
-        });
+        const cancelReplyBtn = document.getElementById('xy-cancel-reply');
+        if(cancelReplyBtn) {
+            cancelReplyBtn.addEventListener('click', function() {
+                currentReplyId = currentReplyName = currentReplyContent = null;
+                document.getElementById('xy-reply-info').style.display = 'none';
+            });
+        }
 
-        // 1. 渲染评论列表的函数 (包含回复与博主标识，改为层级嵌套显示)
+        // ================= 新增：统一生成单条评论 DOM 节点的辅助函数 (修复新评论无回复按钮Bug) =================
+        function createCommentElement(comment) {
+            const li = document.createElement('li'); li.className = 'xy-comment-item'; li.id = `xy-comment-${comment.id}`;
+            const commentBody = document.createElement('div'); commentBody.className = 'xy-comment-body';
+            
+            const commentContent = document.createElement('p'); commentContent.textContent = comment.content;
+            commentBody.appendChild(commentContent);
+
+            const commentMeta = document.createElement('div'); commentMeta.className = 'xy-comment-meta';
+            const commentDate = document.createElement('span'); commentDate.className = 'xy-comment-date';
+            commentDate.textContent = new Date(comment.timestamp).toLocaleString();
+            commentMeta.appendChild(commentDate);
+
+            const info = getCommenterInfo(comment);
+            commentMeta.insertAdjacentHTML('beforeend', info.html); // 极大精简：直接插入身份信息
+
+            const replyBtn = document.createElement('a'); replyBtn.className = 'xy-comment-reply-btn'; replyBtn.textContent = '回复';
+            replyBtn.onclick = function() {
+                currentReplyId = comment.id; currentReplyName = info.name;
+                currentReplyContent = comment.content.length > 30 ? comment.content.substring(0, 30) + '...' : comment.content;
+                document.getElementById('xy-reply-target-name').textContent = currentReplyName;
+                document.getElementById('xy-reply-info').style.display = 'block';
+                document.getElementById('xy-comment-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                document.getElementById('xy-comment-content').focus();
+            };
+            commentMeta.appendChild(replyBtn);
+            li.appendChild(commentBody); li.appendChild(commentMeta);
+            
+            const childrenUl = document.createElement('ul'); childrenUl.className = 'xy-comment-children'; childrenUl.id = `xy-children-${comment.id}`;
+            li.appendChild(childrenUl);
+            return li;
+        }
+
         function renderComments(comments) {
             commentList.innerHTML = ''; 
-            if (comments.length === 0) { commentList.innerHTML = '<li class="comment-item">暂无评论</li>'; return; }
+            if (comments.length === 0) { commentList.innerHTML = '<li class="xy-comment-item">暂无评论</li>'; return; }
 
             const commentMap = new Map();
-            // 先按照时间正序排序
             const sortedComments = comments.sort((a, b) => a.timestamp - b.timestamp);
 
-            // 第一步：生成所有 DOM 节点，并保存到 Map
             sortedComments.forEach(comment => {
-                const li = document.createElement('li'); li.className = 'comment-item'; li.id = `comment-${comment.id}`;
-                const commentBody = document.createElement('div'); commentBody.className = 'comment-body';
-                
-                const commentContent = document.createElement('p'); commentContent.textContent = comment.content;
-                commentBody.appendChild(commentContent);
-
-                const commentMeta = document.createElement('div'); commentMeta.className = 'comment-meta';
-                const commentDate = document.createElement('span'); commentDate.className = 'comment-date';
-                commentDate.textContent = new Date(comment.timestamp).toLocaleString();
-                commentMeta.appendChild(commentDate);
-
-                let commenterName = '匿名';
-                if (comment.isAdmin) {
-                    commenterName = '博主';
-                    const adminBadge = document.createElement('span'); adminBadge.className = 'admin-badge';
-                    adminBadge.innerHTML = '<i class="fas fa-check-circle"></i> 博主';
-                    commentMeta.appendChild(adminBadge);
-                } else if (comment.contact && comment.contact.value) {
-                    let typeLabel = '联系方式';
-                    switch(comment.contact.type) { case 'email': typeLabel='邮箱'; break; case 'QQ': typeLabel='QQ'; break; case 'wechat': typeLabel='微信'; break; case 'telegram': typeLabel='Telegram'; break; }
-                    commenterName = comment.contact.value;
-                    const contactSpan = document.createElement('span'); contactSpan.className = 'comment-contact';
-                    contactSpan.appendChild(document.createTextNode(` [${typeLabel}]: `));
-                    contactSpan.appendChild(document.createTextNode(comment.contact.value));
-                    commentMeta.appendChild(contactSpan);
-                }
-
-                const replyBtn = document.createElement('a'); replyBtn.className = 'comment-reply-btn'; replyBtn.textContent = '回复';
-                replyBtn.onclick = function() {
-                    currentReplyId = comment.id; currentReplyName = commenterName;
-                    currentReplyContent = comment.content.length > 30 ? comment.content.substring(0, 30) + '...' : comment.content;
-                    document.getElementById('reply-target-name').textContent = currentReplyName;
-                    document.getElementById('reply-info').style.display = 'block';
-                    document.getElementById('comment-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    document.getElementById('comment-content').focus();
-                };
-                commentMeta.appendChild(replyBtn);
-                li.appendChild(commentBody); li.appendChild(commentMeta);
-                
-                // 添加子评论容器
-                const childrenUl = document.createElement('ul'); childrenUl.className = 'comment-children'; childrenUl.id = `children-${comment.id}`;
-                li.appendChild(childrenUl);
-
+                const li = createCommentElement(comment); // 极大精简：直接创建完整节点
                 commentMap.set(comment.id, { comment, li });
             });
 
-            // 第二步：组装层级树结构
             sortedComments.forEach(comment => {
                 const node = commentMap.get(comment.id);
                 if (comment.contact && comment.contact.replyToId && commentMap.has(comment.contact.replyToId)) {
-                    // 追加到父级评论的子容器中
                     const parentNode = commentMap.get(comment.contact.replyToId);
-                    parentNode.li.querySelector('.comment-children').appendChild(node.li);
+                    parentNode.li.querySelector('.xy-comment-children').appendChild(node.li);
                 } else {
-                    // 如果是顶级评论，直接追加到主列表的最前面
                     commentList.prepend(node.li);
                 }
             });
         }
 
-        // 2. 获取评论的函数
-			async function fetchComments() {
+		async function fetchComments() {
             try {
-                // 根据 index_plus.js，我们只能获取所有评论
                 const response = await fetch('/api/comments_all');
                 if (!response.ok) throw new Error('获取评论失败');
-                
                 const allComments = await response.json();
-                
-                // --- START: 新增的调用 ---
-                // 用所有评论去渲染侧边栏 (allComments 已经由服务器排好序并打码)
                 renderSidebarComments(allComments);
-				//if (window.stickySidebarInstance) {
-                //window.stickySidebarInstance.updateSticky(); // 手动更新库的状态
-            //}
-                // --- END: 新增的调用 ---
-
-                // 在客户端筛选出当前文章的评论
                 const articleComments = allComments.filter(comment => comment.articleSlug === articleId);
-                
                 renderComments(articleComments);
             } catch (error) {
                 console.error('获取评论时出错:', error);
-                commentList.innerHTML = '<li class="comment-item">加载评论失败</li>';
-                
-                // --- START: 新增的错误处理 ---
-                // 侧边栏也要显示失败
+                if(commentList) commentList.innerHTML = '<li class="xy-comment-item">加载评论失败</li>';
                 const sidebarList = document.getElementById('widget-recent-comments-list');
-                if (sidebarList) {
-                    sidebarList.innerHTML = '<li>加载失败</li>';
-                }
-                // --- END: 新增的错误处理 ---
+                if (sidebarList) sidebarList.innerHTML = '<li>加载失败</li>';
             }
         }
 
-        // 3. 处理评论表单提交
         if (commentForm) {
             commentForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const content = commentContentInput.value.trim();
-
-                // --- START: New Validation ---
                 const captchaAnswer = captchaAnswerEl.value;
                 const captchaInput = captchaInputEl.value.trim();
 
                 if (captchaInput !== captchaAnswer) {
-                    alert('验证码不正确!');
-                    generateCaptcha(); // 刷新验证码
-                    captchaInputEl.value = ''; // 清空输入
-                    return;
+                    alert('验证码不正确!'); generateCaptcha(); captchaInputEl.value = ''; return;
                 }
-                if (!content) {
-                    alert('评论内容不能为空');
-                    return;
-                }
+                if (!content) { alert('评论内容不能为空'); return; }
                 const contactType = contactTypeEl.value; 
                 const contactValue = contactValueEl.value.trim();         
                 if (!contactValue) {
-                    alert('请填写联系方式！');
-                    document.getElementById('contact-value').focus();
-                    return;
+                    alert('请填写联系方式！'); document.getElementById('xy-contact-value').focus(); return;
                 }
+                
                 const newComment = { content: content, timestamp: Date.now(), contact: {} };
-                newComment.contact.type = contactType; 
-                newComment.contact.value = contactValue;
+                newComment.contact.type = contactType; newComment.contact.value = contactValue;
                 if (currentReplyId) {
                     newComment.contact.replyToId = currentReplyId;
                     newComment.contact.replyToName = currentReplyName;
@@ -856,76 +760,34 @@ window.addEventListener('load', function() {
                         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newComment)
                     });
                     if (!response.ok) {
-                        const errData = await response.json().catch(()=>({}));
-                        throw new Error(errData.error || '提交评论失败');
+                        const errData = await response.json().catch(()=>({})); throw new Error(errData.error || '提交评论失败');
                     }
                     const savedComment = await response.json();
                     
-                    if (commentList.querySelector('.comment-item')?.textContent === '暂无评论' || commentList.querySelector('.comment-item')?.textContent === '正在加载评论...') {
+                    if (commentList.querySelector('.xy-comment-item')?.textContent === '暂无评论' || commentList.querySelector('.xy-comment-item')?.textContent === '正在加载评论...') {
                         commentList.innerHTML = '';
                     }
 
-                    const li = document.createElement('li'); li.className = 'comment-item'; li.id = `comment-${savedComment.id}`;
-                    const commentBody = document.createElement('div'); commentBody.className = 'comment-body';
-                    
-                    const commentContent = document.createElement('p'); commentContent.textContent = savedComment.content;
-                    commentBody.appendChild(commentContent);
+                    // 极大精简：提交成功后，直接用辅助函数生成包含回复按钮的完整评论节点
+                    const li = createCommentElement(savedComment);
 
-                    const commentMeta = document.createElement('div'); commentMeta.className = 'comment-meta';
-                    const commentDate = document.createElement('span'); commentDate.className = 'comment-date';
-                    commentDate.textContent = new Date(savedComment.timestamp).toLocaleString();
-                    commentMeta.appendChild(commentDate);
-
-                    if (savedComment.isAdmin) {
-                        const adminBadge = document.createElement('span'); adminBadge.className = 'admin-badge';
-                        adminBadge.innerHTML = '<i class="fas fa-check-circle"></i> 博主';
-                        commentMeta.appendChild(adminBadge);
-                    } else if (savedComment.contact && savedComment.contact.value) {
-                        let typeLabel = '联系方式';
-                        switch(savedComment.contact.type) { case 'email': typeLabel='邮箱'; break; case 'QQ': typeLabel='QQ'; break; case 'wechat': typeLabel='微信'; break; case 'telegram': typeLabel='Telegram'; break; }
-                        const contactSpan = document.createElement('span'); contactSpan.className = 'comment-contact';
-                        contactSpan.appendChild(document.createTextNode(` [${typeLabel}]: `));
-                        contactSpan.appendChild(document.createTextNode(savedComment.contact.value));
-                        commentMeta.appendChild(contactSpan);
-                    }
-                    li.appendChild(commentBody); li.appendChild(commentMeta);
-                    
-                    // 准备子评论容器（以便别人回复该条新评论）
-                    const childrenUl = document.createElement('ul'); childrenUl.className = 'comment-children'; childrenUl.id = `children-${savedComment.id}`;
-                    li.appendChild(childrenUl);
-
-                    // 插入到正确的位置（判断是否为回复某人）
                     if (savedComment.contact && savedComment.contact.replyToId) {
-                        const parentUl = document.getElementById(`children-${savedComment.contact.replyToId}`);
-                        if (parentUl) {
-                            parentUl.appendChild(li); // 子评论追加到父评论下方
-                        } else {
-                            commentList.prepend(li); // 容错：若没找到父级，则放最前
-                        }
-                    } else {
-                        commentList.prepend(li); // 顶级评论直接放最前面
-                    }
+                        const parentUl = document.getElementById(`xy-children-${savedComment.contact.replyToId}`);
+                        if (parentUl) { parentUl.appendChild(li); } else { commentList.prepend(li); }
+                    } else { commentList.prepend(li); }
 
-                    // --- START: Clear inputs and regenerate captcha ---
-                    commentContentInput.value = ''; // 清空评论框
-                    contactValueEl.value = '';    // 清空联系方式
-                    captchaInputEl.value = '';    // 清空验证码
-                    generateCaptcha();            // 重新生成验证码
-                    currentReplyId = currentReplyName = currentReplyContent = null;
-                    document.getElementById('reply-info').style.display = 'none';
-                    // --- END: Clear inputs ---
+                    commentContentInput.value = ''; contactValueEl.value = ''; captchaInputEl.value = '';    
+                    generateCaptcha(); currentReplyId = currentReplyName = currentReplyContent = null;
+                    document.getElementById('xy-reply-info').style.display = 'none';
 
                 } catch (error) {
-                    console.error('提交评论时出错:', error);
-                    alert(error.message || '评论提交失败');
-                    generateCaptcha(); // 出错时也刷新验证码
+                    console.error('提交评论时出错:', error); alert(error.message || '评论提交失败'); generateCaptcha(); 
                 }
             });
         }
 
-        // 4. 页面加载时立即获取评论和生成验证码
         fetchComments();
-        generateCaptcha(); // --- ADDED: 初始生成验证码 ---
+        generateCaptcha();
 		// --- START: 在这里添加搜索按钮的 JS 逻辑 ---
         const searchButton = document.querySelector('.search-button');
         const searchInput = document.querySelector('.search-input');
