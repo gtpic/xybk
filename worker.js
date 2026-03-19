@@ -154,6 +154,9 @@ async function handleRequest({ request, env, ctx }) {
                 data["admin_comment_id"] = configs["admin_comment_id"] || ''; 
 				data["comment_max_length"] = configs["comment_max_length"] || '500';
                 data["active_storage_node"] = configs["active_storage_node"] || 'r2';
+				data["tg_notify_enable"] = configs["tg_notify_enable"] || 'false';
+                data["tg_notify_bot_token"] = configs["tg_notify_bot_token"] || '';
+                data["tg_notify_chat_id"] = configs["tg_notify_chat_id"] || '';
                 if (configs["showSiteNameInHeader"] === 'false') {
                     data["showSiteNameInHeader_false"] = true;
                 } else {
@@ -636,6 +639,16 @@ async function handleRequest({ request, env, ctx }) {
             // 写入数据库时，使用带有完整号码的 dbContact 变量
             await env.db.prepare("INSERT INTO comments (id, articleSlug, content, contact, timestamp) VALUES (?, ?, ?, ?, ?)")
                 .bind(cid, articleSlug, newComment.content, dbContact, newComment.timestamp).run();
+			// 独立的 TG 评论提醒功能 (异步请求，不阻塞用户提交评论)
+            if (configs["tg_notify_enable"] === 'true' && configs["tg_notify_bot_token"] && configs["tg_notify_chat_id"]) {
+                const tgText = `🔔 <b>博客有新评论啦！</b>\n\n<b>文章路径:</b> ${articleSlug}\n<b>评论内容:</b>\n<pre>${newComment.content}</pre>\n<b>联系方式:</b> ${newComment.contact && newComment.contact.value ? newComment.contact.value : '未留联系方式'}`;
+                const tgUrl = `https://api.telegram.org/bot${configs["tg_notify_bot_token"]}/sendMessage`;
+                ctx.waitUntil(fetch(tgUrl, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ chat_id: configs["tg_notify_chat_id"], text: tgText, parse_mode: "HTML" }) 
+                }).catch(err => console.error("TG Notify Error:", err)));
+            }
 			return new Response(JSON.stringify(newComment), { status: 201, headers: { 'Content-Type': 'application/json' } });
 		}
 		else if (pathname.startsWith('/api/comments/') && request.method === 'DELETE') {
